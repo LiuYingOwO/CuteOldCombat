@@ -26,7 +26,7 @@ public final class Installer {
             resetCurrentTransformer(logger);
 
             if (!NmsManager.install(logger)) {
-                logger.severe("[OldCombat] NmsManager failed to load adapter. NMS patches disabled.");
+                logger.severe("Failed to load Nms-adapter. NMS patches disabled.");
                 return false;
             }
 
@@ -35,15 +35,15 @@ public final class Installer {
                 instrumentation = Agent.findInstrumentation();
 
                 if (instrumentation != null) {
-                    logger.info("[OldCombat] Using Instrumentation from -javaagent.");
+                    logger.info("Using Instrumentation from -javaagent.");
                 }
             }
 
             if (instrumentation == null) {
-                logger.info("[OldCombat] Installing ByteBuddy agent dynamically...");
+                logger.info("Installing ByteBuddy agent dynamically...");
                 instrumentation = ByteBuddyAgent.install();
             } else {
-                logger.info("[OldCombat] Reusing existing Instrumentation.");
+                logger.info("Reusing existing Instrumentation.");
             }
 
             AgentBuilder agentBuilder = new AgentBuilder.Default()
@@ -56,7 +56,7 @@ public final class Installer {
                                                      JavaModule module,
                                                      boolean loaded,
                                                      DynamicType dynamicType) {
-                            logger.info("[OldCombat] Patched " + typeDescription.getName());
+                            logger.info("Patched " + typeDescription.getName());
                         }
 
                         @Override
@@ -66,7 +66,7 @@ public final class Installer {
                                             boolean loaded,
                                             Throwable throwable) {
                             if (typeName.startsWith("net.minecraft.world.entity")) {
-                                logger.log(Level.SEVERE, "[OldCombat] Failed to patch " + typeName, throwable);
+                                logger.log(Level.SEVERE, "Failed to patch " + typeName, throwable);
                             }
                         }
                     })
@@ -80,7 +80,7 @@ public final class Installer {
 
             return true;
         } catch (Throwable throwable) {
-            logger.log(Level.SEVERE, "[OldCombat] Could not install NMS patches.", throwable);
+            logger.log(Level.SEVERE, "Could not install NMS patches.", throwable);
             return false;
         }
     }
@@ -97,12 +97,12 @@ public final class Installer {
         try {
             boolean reset = transformer.reset(instrumentation, AgentBuilder.RedefinitionStrategy.RETRANSFORMATION);
             if (reset) {
-                logger.info("[OldCombat] Previous NMS patches reset.");
+                logger.info("Previous NMS patches reset.");
             } else {
-                logger.warning("[OldCombat] Previous NMS patches could not be fully reset.");
+                logger.warning("Previous NMS patches could not be fully reset.");
             }
         } catch (Throwable throwable) {
-            logger.log(Level.WARNING, "[OldCombat] Failed to reset previous NMS patches.", throwable);
+            logger.log(Level.WARNING, "Failed to reset previous NMS patches.", throwable);
         } finally {
             transformer = null;
         }

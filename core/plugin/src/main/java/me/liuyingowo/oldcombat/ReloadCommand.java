@@ -20,7 +20,7 @@ public final class ReloadCommand extends Command implements PluginIdentifiableCo
                 "cuteoldcombat",
                 "Reload CuteOldCombat configuration and NMS hooks.",
                 "/cuteoldcombat reload",
-                List.of("oldcombat", "coc")
+                List.of("oldcombat")
         );
 
         this.plugin = plugin;
@@ -37,9 +37,9 @@ public final class ReloadCommand extends Command implements PluginIdentifiableCo
             boolean installed = plugin.reloadOldCombat();
 
             if (installed) {
-                sender.sendMessage("§a[OldCombat] Reloaded. NMS patches enabled.");
+                sender.sendMessage("§a重载成功!.");
             } else {
-                sender.sendMessage("§e[OldCombat] Reloaded, but NMS patches were not installed. Only Bukkit-side fallbacks are active.");
+                sender.sendMessage("§e重载成功, 但 NMS 补丁未加载.");
             }
 
             return true;

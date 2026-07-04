@@ -27,9 +27,9 @@ public final class CuteOldCombat extends JavaPlugin {
         registerCommand();
 
         if (installed) {
-            getLogger().info("[OldCombat] 1.8 combat patches enabled.");
+            getLogger().info("Loaded Complete.");
         } else {
-            getLogger().warning("[OldCombat] NMS patches were not installed. Only Bukkit-side fallbacks are active.");
+            getLogger().warning("NMS patches were not installed.");
         }
     }
 
@@ -74,7 +74,7 @@ public final class CuteOldCombat extends JavaPlugin {
         );
 
         KnockbackSettings.update(settings);
-        getLogger().info("[OldCombat] Knockback settings loaded: " + settings);
+        getLogger().info("Knockback settings loaded: " + settings);
     }
 
     private void registerCommand() {

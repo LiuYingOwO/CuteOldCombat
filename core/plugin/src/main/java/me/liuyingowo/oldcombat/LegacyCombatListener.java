@@ -11,7 +11,6 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public final class LegacyCombatListener implements Listener {
 

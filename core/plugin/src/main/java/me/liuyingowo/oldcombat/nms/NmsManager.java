@@ -28,33 +28,33 @@ public final class NmsManager {
         Version version = Version.CURRENT;
 
         if (version == null) {
-            logger.severe("[OldCombat] Unsupported Minecraft version! Detected: "
+            logger.severe("Unsupported Minecraft version! Detected: "
                     + Version.getCurrentMinecraftVersion());
             return false;
         }
 
         String className = version.getAdapterClassName();
-        logger.info("[OldCombat] Detected server version: " + version.name()
+        logger.info("Detected server version: " + version.name()
                 + " → loading " + className);
 
         try {
             Class<?> implClass = Class.forName(className, true, NmsManager.class.getClassLoader());
 
             if (!NmsAdapter.class.isAssignableFrom(implClass)) {
-                logger.severe("[OldCombat] " + className + " does not implement NmsAdapter.");
+                logger.severe(className + " does not implement NmsAdapter.");
                 return false;
             }
 
             Constructor<?> constructor = implClass.getDeclaredConstructor();
             adapter = (NmsAdapter) constructor.newInstance();
 
-            logger.info("[OldCombat] NmsAdapter loaded: " + adapter.getClass().getName());
+            logger.info("NmsAdapter loaded: " + adapter.getClass().getName());
             return true;
         } catch (ClassNotFoundException e) {
-            logger.severe("[OldCombat] NMS adapter class not found: " + className);
+            logger.severe("NMS adapter class not found: " + className);
             return false;
         } catch (Exception e) {
-            logger.severe("[OldCombat] Failed to instantiate NMS adapter: " + e.getMessage());
+            logger.severe("Failed to instantiate NMS adapter: " + e.getMessage());
             return false;
         }
     }

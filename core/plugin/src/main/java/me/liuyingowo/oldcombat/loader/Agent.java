@@ -7,8 +7,7 @@ public final class Agent {
 
     private static volatile Instrumentation instrumentation;
 
-    private Agent() {
-    }
+    private Agent() {}
 
     public static void premain(String args, Instrumentation inst) {
         instrumentation = inst;
