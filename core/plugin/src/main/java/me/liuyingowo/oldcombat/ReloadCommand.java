@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public final class OldCombatCommand extends Command implements PluginIdentifiableCommand {
+public final class ReloadCommand extends Command implements PluginIdentifiableCommand {
 
     private final CuteOldCombat plugin;
 
-    public OldCombatCommand(CuteOldCombat plugin) {
+    public ReloadCommand(CuteOldCombat plugin) {
         super(
                 "cuteoldcombat",
                 "Reload CuteOldCombat configuration and NMS hooks.",

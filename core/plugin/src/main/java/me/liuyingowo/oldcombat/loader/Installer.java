@@ -14,12 +14,12 @@ import java.lang.instrument.Instrumentation;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public final class LegacyCombatInstaller {
+public final class Installer {
 
     private static Instrumentation instrumentation;
     private static ResettableClassFileTransformer transformer;
 
-    private LegacyCombatInstaller() {
+    private Installer() {
     }
 
     public static synchronized boolean install(Logger logger) {
@@ -33,10 +33,18 @@ public final class LegacyCombatInstaller {
 
             NmsAdapter adapter = NmsManager.getAdapter();
             if (instrumentation == null) {
-                logger.info("[OldCombat] Installing ByteBuddy agent...");
+                instrumentation = Agent.getInstrumentation();
+
+                if (instrumentation != null) {
+                    logger.info("[OldCombat] Using Instrumentation from -javaagent.");
+                }
+            }
+
+            if (instrumentation == null) {
+                logger.info("[OldCombat] Installing ByteBuddy agent dynamically...");
                 instrumentation = ByteBuddyAgent.install();
             } else {
-                logger.info("[OldCombat] Reusing ByteBuddy instrumentation.");
+                logger.info("[OldCombat] Reusing existing Instrumentation.");
             }
 
             AgentBuilder agentBuilder = new AgentBuilder.Default()

@@ -42,6 +42,15 @@ dependencies {
 tasks.named('shadowJar') {
     archiveFileName = "${pluginName}.jar"
 
+    manifest {
+        attributes(
+                'Premain-Class': 'me.liuyingowo.oldcombat.loader.Agent',
+                'Agent-Class': 'me.liuyingowo.oldcombat.loader.Agent',
+                'Can-Redefine-Classes': 'true',
+                'Can-Retransform-Classes': 'true'
+        )
+    }
+
     exclude ('META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA')
 }
 

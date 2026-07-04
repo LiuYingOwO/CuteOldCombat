@@ -1,6 +1,6 @@
 package me.liuyingowo.oldcombat;
 
-import me.liuyingowo.oldcombat.loader.LegacyCombatInstaller;
+import me.liuyingowo.oldcombat.loader.Installer;
 import me.liuyingowo.oldcombat.nms.adapter.KnockbackSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -18,7 +18,7 @@ public final class CuteOldCombat extends JavaPlugin {
     @Override
     public void onLoad() {
         loadKnockbackSettings();
-        installed = LegacyCombatInstaller.install(getLogger());
+        installed = Installer.install(getLogger());
     }
 
     @Override
@@ -40,12 +40,12 @@ public final class CuteOldCombat extends JavaPlugin {
             oldCombatCommand = null;
         }
 
-        LegacyCombatInstaller.uninstall(getLogger());
+        Installer.uninstall(getLogger());
     }
 
     public boolean reloadOldCombat() {
         loadKnockbackSettings();
-        installed = LegacyCombatInstaller.install(getLogger());
+        installed = Installer.install(getLogger());
         return installed;
     }
 
@@ -84,7 +84,7 @@ public final class CuteOldCombat extends JavaPlugin {
             );
         }
 
-        oldCombatCommand = new OldCombatCommand(this);
+        oldCombatCommand = new ReloadCommand(this);
         getServer().getCommandMap().register(
                 getName().toLowerCase(Locale.ROOT),
                 oldCombatCommand
