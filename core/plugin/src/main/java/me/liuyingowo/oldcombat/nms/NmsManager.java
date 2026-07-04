@@ -73,7 +73,12 @@ public final class NmsManager {
     }
 
     public static void applyLegacyAttackSpeed(Player player) {
+        NmsAdapter current = adapter;
+        if (current == null || player == null) {
+            return;
+        }
 
+        current.applyLegacyAttackSpeed(player);
     };
     /**
      * 检查适配器是否已安装。

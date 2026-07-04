@@ -19,8 +19,7 @@ public final class Installer {
     private static Instrumentation instrumentation;
     private static ResettableClassFileTransformer transformer;
 
-    private Installer() {
-    }
+    private Installer() {}
 
     public static synchronized boolean install(Logger logger) {
         try {
@@ -33,7 +32,7 @@ public final class Installer {
 
             NmsAdapter adapter = NmsManager.getAdapter();
             if (instrumentation == null) {
-                instrumentation = Agent.getInstrumentation();
+                instrumentation = Agent.findInstrumentation();
 
                 if (instrumentation != null) {
                     logger.info("[OldCombat] Using Instrumentation from -javaagent.");

@@ -11,6 +11,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public final class LegacyCombatListener implements Listener {
 
@@ -49,18 +50,10 @@ public final class LegacyCombatListener implements Listener {
         }
     }
 
-    public void refreshOnlinePlayers() {
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
-            applyLegacyAttackSpeed(player);
-            plugin.getServer().getScheduler().runTaskLater(plugin, () -> applyLegacyAttackSpeed(player), 1L);
-        }
-    }
-
     private void applyLegacyAttackSpeed(Player player) {
         if (player == null || !player.isOnline()) {
             return;
         }
-
         NmsManager.applyLegacyAttackSpeed(player);
     }
 }

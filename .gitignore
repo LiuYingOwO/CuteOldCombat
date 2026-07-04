@@ -1,5 +1,6 @@
 # 项目排除路径
 /.gradle/
+/.idea/
 /build/
 /core/build/
 /core/nms/build/
