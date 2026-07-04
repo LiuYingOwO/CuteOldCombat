@@ -1,0 +1,13 @@
+name: ${name}
+version: ${version}
+authors: LiuYingOwO
+description: 底层重写的高版本 1.8 战斗引擎
+main: me.liuyingowo.oldcombat.CuteOldCombat
+api-version: '1.20'
+
+paperweight-mappings-namespace: mojang
+
+permissions:
+  cuteoldcombat.reload:
+    description: Allows reloading CuteOldCombat.
+    default: op

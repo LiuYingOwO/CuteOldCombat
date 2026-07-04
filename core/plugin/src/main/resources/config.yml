@@ -1,0 +1,21 @@
+# Set to true to replace Paper's knockback with the configurable legacy-style hook.
+knockback:
+  enabled: false
+
+  # Multiplies the incoming NMS knockback strength. Simple melee hits are usually 0.4.
+  horizontal: 1.0
+
+  # Added to the current vertical velocity after friction is applied.
+  vertical: 0.4000000059604645
+
+  # Caps upward velocity after vertical is added.
+  vertical-limit: 0.4000000059604645
+
+  # Multiplies current velocity before knockback is added. Minecraft 1.8 uses 0.5.
+  friction: 0.5
+
+  # Ignore extremely small horizontal directions.
+  min-direction-length: 0.00001
+
+  # Applies the entity knockback resistance attribute as a strength multiplier.
+  apply-resistance: true

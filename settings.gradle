@@ -1,0 +1,18 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+        maven { url = 'https://repo.papermc.io/repository/maven-public/' }
+    }
+}
+
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.5.0'
+}
+
+rootProject.name = 'CuteOldCombat'
+
+include 'core:plugin',
+        'core:nms:nms-adapter',
+        'core:nms:nms-v1_20_R4',
+        'core:nms:nms-v1_21_R7'

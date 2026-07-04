@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/core/nms" />
+            <option value="$PROJECT_DIR$/core/nms/nms-adapter" />
+            <option value="$PROJECT_DIR$/core/nms/nms-paper-v1_21_R7" />
+            <option value="$PROJECT_DIR$/core/nms/nms-v1_20_R4" />
+            <option value="$PROJECT_DIR$/core/plugin" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>

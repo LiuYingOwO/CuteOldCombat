@@ -1,0 +1,52 @@
+plugins {
+    id 'com.gradleup.shadow' version '9.4.2'
+}
+
+def pluginName = "CuteOldCombat"
+def pluginJarVersion = "1.0"
+
+tasks.processResources {
+    inputs.property 'version', pluginJarVersion
+    inputs.property 'name', pluginName
+    filteringCharset = 'UTF-8'
+
+    // 定义Plugin.yml中版本, 插件名称
+    filesMatching('paper-plugin.yml') {
+        expand(
+                version: pluginJarVersion,
+                name: pluginName
+        )
+    }
+}
+
+dependencies {
+    compileOnly("io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT")
+
+    implementation project(':core:nms:nms-adapter')
+
+    rootProject.subprojects
+            .findAll {
+                it.parent?.path == ':core:nms'
+                        && it.name.startsWith('nms-')
+                        && it.name != 'nms-adapter'
+            }
+            .sort { it.path }
+            .each {
+                runtimeOnly project(it.path)
+            }
+
+    implementation("net.bytebuddy:byte-buddy:1.14.18")
+    implementation("net.bytebuddy:byte-buddy-agent:1.14.18")
+}
+
+tasks.named('shadowJar') {
+    archiveFileName = "${pluginName}.jar"
+
+    exclude ('META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA')
+}
+
+tasks.named('assemble') {
+    dependsOn tasks.named('shadowJar')
+}
+
+
