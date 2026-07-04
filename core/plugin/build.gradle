@@ -58,4 +58,8 @@ tasks.named('assemble') {
     dependsOn tasks.named('shadowJar')
 }
 
+tasks.named('jar') {
+    enabled = false;
+}
+
 
