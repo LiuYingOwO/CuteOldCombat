@@ -33,7 +33,7 @@ public final class NmsManager {
             return false;
         }
 
-        String className = version.getAdapterClassName();
+        String className = "me.liuyingowo.oldcombat.nms.impl." + version.name() + ".NmsAdapterImpl";
         logger.info("Detected server version: " + version.name()
                 + " → loading " + className);
 

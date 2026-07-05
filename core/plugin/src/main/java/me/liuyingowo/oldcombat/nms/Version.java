@@ -4,18 +4,12 @@ import org.bukkit.Bukkit;
 
 import javax.annotation.Nullable;
 
-/**
- * Minecraft 版本枚举，自动检测当前服务器版本并映射到对应的 NMS 适配器实现。
- * 命名约定：{@link #name()} 的小写形式对应 nms 子包名，
- * 例如 {@code v1_21_R7} → {@code me.liuyingowo.oldcombat.nms.v1_21_r7.NmsAdapterImpl}。
- */
 public enum Version {
 
     v1_20_R4("1.20.5", "1.20.6"),
     v1_21_R7("1.21.11"),
     ;
 
-    /** 当前运行环境的版本常量 */
     public static final Version CURRENT;
 
     static {
@@ -53,9 +47,5 @@ public enum Version {
 
     public String[] getMinecraftVersions() {
         return minecraftVersions;
-    }
-
-    public String getAdapterClassName() {
-        return "me.liuyingowo.oldcombat.nms.impl." + name() + ".NmsAdapterImpl";
     }
 }
