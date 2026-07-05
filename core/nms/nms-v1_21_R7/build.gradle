@@ -7,7 +7,6 @@ dependencies {
 
     paperweightDevelopmentBundle 'io.papermc.paper:dev-bundle:1.21.11-R0.1-SNAPSHOT'
     compileOnly("com.comphenix.protocol:ProtocolLib:5.3.0")
-    implementation("com.google.code.gson:gson:2.11.0")
 
     compileOnly("net.bytebuddy:byte-buddy:1.14.18")
     compileOnly("net.bytebuddy:byte-buddy-agent:1.14.18")

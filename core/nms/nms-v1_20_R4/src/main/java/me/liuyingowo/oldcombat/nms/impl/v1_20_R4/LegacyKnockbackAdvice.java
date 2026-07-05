@@ -1,8 +1,10 @@
 package me.liuyingowo.oldcombat.nms.impl.v1_20_R4;
 
 import io.papermc.paper.event.entity.EntityKnockbackEvent;
+import me.liuyingowo.oldcombat.nms.adapter.AgentPatch;
 import me.liuyingowo.oldcombat.nms.adapter.KnockbackSettings;
 import net.bytebuddy.asm.Advice;
+import net.bytebuddy.matcher.ElementMatchers;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -13,6 +15,28 @@ import org.bukkit.craftbukkit.event.CraftEventFactory;
 public final class LegacyKnockbackAdvice {
 
     private LegacyKnockbackAdvice() {
+    }
+
+    public static AgentPatch patch() {
+        return (agentBuilder, logger) -> {
+            if (!KnockbackSettings.current().isEnabled()) {
+                logger.info("Legacy knockback hook disabled by config.");
+                return agentBuilder;
+            }
+
+            logger.info("Legacy knockback hook enabled.");
+            return agentBuilder
+                    .type(ElementMatchers.named(LivingEntity.class.getName()))
+                    .transform((builder, typeDescription, classLoader, javaModule, protectionDomain) ->
+                            builder.visit(Advice.to(LegacyKnockbackAdvice.class)
+                                    .on(ElementMatchers.named("knockback")
+                                            .and(ElementMatchers.takesArguments(
+                                                    double.class,
+                                                    double.class,
+                                                    double.class,
+                                                    Entity.class,
+                                                    EntityKnockbackEvent.Cause.class)))));
+        };
     }
 
     @Advice.OnMethodEnter(skipOn = Advice.OnNonDefaultValue.class)

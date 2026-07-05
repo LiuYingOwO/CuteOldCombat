@@ -5,10 +5,6 @@ import org.bukkit.entity.Player;
 
 import java.util.logging.Logger;
 
-/**
- * 版本适配器接口，每个 Minecraft 版本提供各自的实现，
- * 负责向 AgentBuilder 注册 ByteBuddy Transformer。
- */
 public interface NmsAdapter {
 
     /**
