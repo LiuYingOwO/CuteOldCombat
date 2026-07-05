@@ -1,7 +1,7 @@
 name: ${name}
 version: ${version}
-authors: LiuYingOwO
-description: 底层重写的高版本 1.8 战斗引擎
+authors: [ LiuYingOwO ]
+description: Restores legacy 1.8-style combat through Java instrumentation.
 main: me.liuyingowo.oldcombat.CuteOldCombat
 api-version: '1.20'
 
