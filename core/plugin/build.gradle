@@ -35,8 +35,8 @@ dependencies {
                 runtimeOnly project(it.path)
             }
 
-    implementation("net.bytebuddy:byte-buddy:1.14.18")
-    implementation("net.bytebuddy:byte-buddy-agent:1.14.18")
+    implementation("net.bytebuddy:byte-buddy:1.18.11")
+    implementation("net.bytebuddy:byte-buddy-agent:1.18.11")
 }
 
 tasks.named('shadowJar') {
@@ -56,10 +56,6 @@ tasks.named('shadowJar') {
 
 tasks.named('assemble') {
     dependsOn tasks.named('shadowJar')
-}
-
-tasks.named('jar') {
-    enabled = false;
 }
 
 

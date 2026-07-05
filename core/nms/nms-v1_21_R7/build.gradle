@@ -11,3 +11,9 @@ dependencies {
     compileOnly("net.bytebuddy:byte-buddy:1.14.18")
     compileOnly("net.bytebuddy:byte-buddy-agent:1.14.18")
 }
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}

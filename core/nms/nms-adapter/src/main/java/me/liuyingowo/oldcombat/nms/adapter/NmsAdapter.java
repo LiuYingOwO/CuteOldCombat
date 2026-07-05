@@ -1,9 +1,6 @@
 package me.liuyingowo.oldcombat.nms.adapter;
 
 import net.bytebuddy.agent.builder.AgentBuilder;
-import org.bukkit.entity.Player;
-
-import java.util.logging.Logger;
 
 public interface NmsAdapter {
 
@@ -14,7 +11,7 @@ public interface NmsAdapter {
      * @param logger       日志记录器
      * @return 应用补丁后的 AgentBuilder（用于继续链式调用 .installOn()）
      */
-    AgentBuilder apply(AgentBuilder agentBuilder, Logger logger);
+    AgentBuilder apply(AgentBuilder agentBuilder, java.util.logging.Logger logger);
 
-    void applyLegacyAttackSpeed(Player player);
+    void applyLegacyAttackSpeed(org.bukkit.entity.Player player);
 }

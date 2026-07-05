@@ -1,12 +1,6 @@
 subprojects {
     apply plugin: 'java-library'
 
-    java {
-        toolchain {
-            languageVersion = JavaLanguageVersion.of(21)
-        }
-    }
-
     repositories {
         mavenCentral()
         maven { url = 'https://maven.aliyun.com/repository/public/' }

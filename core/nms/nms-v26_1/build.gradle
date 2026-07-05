@@ -1,0 +1,45 @@
+plugins {
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.21"
+}
+
+dependencies {
+    compileOnly project(':core:nms:nms-adapter')
+
+    paperweight.paperDevBundle("26.1.2.build.+")
+    compileOnly("com.comphenix.protocol:ProtocolLib:5.3.0")
+
+    compileOnly("net.bytebuddy:byte-buddy:1.14.18")
+    compileOnly("net.bytebuddy:byte-buddy-agent:1.14.18")
+}
+
+// 26.x dev bundles are consumed in Mojang namespace and do not provide reobf options.
+tasks.named("reobfJar") {
+    enabled = false
+}
+
+configurations.named("reobf") {
+    canBeConsumed = false
+}
+
+configurations {
+    nmsRuntimeElements {
+        canBeConsumed = true
+        canBeResolved = false
+        visible = false
+
+        attributes {
+            attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
+            attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
+            attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements, LibraryElements.JAR))
+            attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))
+        }
+
+        outgoing.artifact(tasks.named("jar"))
+    }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}

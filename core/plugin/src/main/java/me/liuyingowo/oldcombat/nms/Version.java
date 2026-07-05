@@ -8,6 +8,7 @@ public enum Version {
 
     v1_20_R4("1.20.5", "1.20.6"),
     v1_21_R7("1.21.11"),
+    v26_1("26.1", "26.1.1", "26.1.2")
     ;
 
     public static final Version CURRENT;
@@ -36,7 +37,7 @@ public enum Version {
      */
     public static String getCurrentMinecraftVersion() {
         // Bukkit.getBukkitVersion() 返回 "1.21.11-R0.1-SNAPSHOT"，取第一部分
-        return Bukkit.getServer().getBukkitVersion().split("-", 2)[0];
+        return Bukkit.getServer().getVersion().split("-", 2)[0];
     }
 
     private final String[] minecraftVersions;
