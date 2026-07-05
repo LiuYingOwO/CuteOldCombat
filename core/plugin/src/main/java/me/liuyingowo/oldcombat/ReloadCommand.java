@@ -37,9 +37,9 @@ public final class ReloadCommand extends Command implements PluginIdentifiableCo
             boolean installed = plugin.reloadOldCombat();
 
             if (installed) {
-                sender.sendMessage("§a重载成功!.");
+                sender.sendMessage("§a插件重载成功");
             } else {
-                sender.sendMessage("§e重载成功, 但 NMS 补丁未加载.");
+                sender.sendMessage("§e插件部分重载成功. (NMS 补丁未加载)");
             }
 
             return true;

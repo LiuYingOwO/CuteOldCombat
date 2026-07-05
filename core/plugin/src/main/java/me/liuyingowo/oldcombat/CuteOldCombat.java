@@ -1,7 +1,6 @@
 package me.liuyingowo.oldcombat;
 
 import me.liuyingowo.oldcombat.loader.Installer;
-import me.liuyingowo.oldcombat.nms.adapter.KnockbackSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.permissions.Permission;
@@ -17,8 +16,8 @@ public final class CuteOldCombat extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        loadKnockbackSettings();
-        installed = Installer.install(getLogger());
+        loadOldCombatConfig();
+        installed = Installer.install(getLogger(), getConfig());
     }
 
     @Override
@@ -27,7 +26,7 @@ public final class CuteOldCombat extends JavaPlugin {
         registerCommand();
 
         if (installed) {
-            getLogger().info("Loaded Complete.");
+            getLogger().info("Loading Complete >w<.");
         } else {
             getLogger().warning("NMS patches were not installed.");
         }
@@ -44,8 +43,8 @@ public final class CuteOldCombat extends JavaPlugin {
     }
 
     public boolean reloadOldCombat() {
-        loadKnockbackSettings();
-        installed = Installer.install(getLogger());
+        loadOldCombatConfig();
+        installed = Installer.install(getLogger(), getConfig());
         return installed;
     }
 
@@ -53,28 +52,11 @@ public final class CuteOldCombat extends JavaPlugin {
         return installed;
     }
 
-    public KnockbackSettings.Snapshot getKnockbackSettings() {
-        return KnockbackSettings.current();
-    }
-
-    private void loadKnockbackSettings() {
+    private void loadOldCombatConfig() {
         saveDefaultConfig();
         reloadConfig();
         getConfig().options().copyDefaults(true);
         saveConfig();
-
-        KnockbackSettings.Snapshot settings = new KnockbackSettings.Snapshot(
-                getConfig().getBoolean("knockback.enabled", KnockbackSettings.DEFAULT.isEnabled()),
-                getConfig().getDouble("knockback.horizontal", KnockbackSettings.DEFAULT_HORIZONTAL),
-                getConfig().getDouble("knockback.vertical", KnockbackSettings.DEFAULT_VERTICAL),
-                getConfig().getDouble("knockback.vertical-limit", KnockbackSettings.DEFAULT_VERTICAL_LIMIT),
-                getConfig().getDouble("knockback.friction", KnockbackSettings.DEFAULT_FRICTION),
-                getConfig().getDouble("knockback.min-direction-length", KnockbackSettings.DEFAULT_MIN_DIRECTION_LENGTH),
-                getConfig().getBoolean("knockback.apply-resistance", KnockbackSettings.DEFAULT_APPLY_RESISTANCE)
-        );
-
-        KnockbackSettings.update(settings);
-        getLogger().info("Knockback settings loaded: " + settings);
     }
 
     private void registerCommand() {

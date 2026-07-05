@@ -2,7 +2,7 @@ package me.liuyingowo.oldcombat.nms.impl.v1_21_R7;
 
 import io.papermc.paper.event.entity.EntityKnockbackEvent;
 import me.liuyingowo.oldcombat.nms.adapter.AgentPatch;
-import me.liuyingowo.oldcombat.nms.adapter.KnockbackSettings;
+import me.liuyingowo.oldcombat.nms.adapter.KnockbackBridge;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.minecraft.world.entity.Entity;
@@ -19,12 +19,7 @@ public final class LegacyKnockbackAdvice {
 
     public static AgentPatch patch() {
         return (agentBuilder, logger) -> {
-            if (!KnockbackSettings.current().isEnabled()) {
-                logger.info("Legacy knockback hook disabled by config.");
-                return agentBuilder;
-            }
-
-            logger.info("Legacy knockback hook enabled.");
+            logger.info("Knockback hook installed!");
             return agentBuilder
                     .type(ElementMatchers.named(LivingEntity.class.getName()))
                     .transform((builder, typeDescription, classLoader, javaModule, protectionDomain) ->
@@ -44,10 +39,16 @@ public final class LegacyKnockbackAdvice {
     @Advice.OnMethodEnter(skipOn = Advice.OnNonDefaultValue.class)
     public static boolean onEnter(@Advice.This LivingEntity entity,
                                   @Advice.AllArguments Object[] args) {
-        KnockbackSettings.Snapshot settings = KnockbackSettings.current();
-        if (!settings.isEnabled()) {
+        if (!KnockbackBridge.enabled) {
             return false;
         }
+
+        double horizontal = KnockbackBridge.horizontal;
+        double vertical = KnockbackBridge.vertical;
+        double verticalLimit = KnockbackBridge.verticalLimit;
+        double friction = KnockbackBridge.friction;
+        double minDirectionLength = KnockbackBridge.minDirectionLength;
+        boolean applyResistance = KnockbackBridge.applyResistance;
 
         double strength = (double) args[0];
         double x = (double) args[1];
@@ -77,24 +78,24 @@ public final class LegacyKnockbackAdvice {
         }
 
         double adjustedStrength = strength;
-        if (settings.isApplyResistance()) {
+        if (applyResistance) {
             adjustedStrength *= Math.max(0.0D, 1.0D - entity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
         }
-        adjustedStrength *= settings.getHorizontal();
+        adjustedStrength *= horizontal;
 
         Vec3 current = entity.getDeltaMovement();
-        double nextX = current.x() * settings.getFriction();
-        double nextY = current.y() * settings.getFriction();
-        double nextZ = current.z() * settings.getFriction();
+        double nextX = current.x() * friction;
+        double nextY = current.y() * friction;
+        double nextZ = current.z() * friction;
 
         double directionLength = Math.sqrt(x * x + z * z);
-        if (directionLength >= settings.getMinDirectionLength()) {
+        if (directionLength >= minDirectionLength) {
             nextX -= x / directionLength * adjustedStrength;
-            nextY += settings.getVertical();
+            nextY += vertical;
             nextZ -= z / directionLength * adjustedStrength;
 
-            if (nextY > settings.getVerticalLimit()) {
-                nextY = settings.getVerticalLimit();
+            if (nextY > verticalLimit) {
+                nextY = verticalLimit;
             }
         }
 

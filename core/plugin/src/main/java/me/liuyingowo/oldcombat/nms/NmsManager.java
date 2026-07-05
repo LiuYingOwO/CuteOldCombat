@@ -34,8 +34,7 @@ public final class NmsManager {
         }
 
         String className = "me.liuyingowo.oldcombat.nms.impl." + version.name() + ".NmsAdapterImpl";
-        logger.info("Detected server version: " + version.name()
-                + " → loading " + className);
+        logger.info("Detected server version: " + version.name());
 
         try {
             Class<?> implClass = Class.forName(className, true, NmsManager.class.getClassLoader());
