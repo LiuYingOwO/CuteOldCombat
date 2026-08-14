@@ -26,7 +26,7 @@ public final class CuteOldCombat extends JavaPlugin {
         registerCommand();
 
         if (installed) {
-            getLogger().info("Loading Complete >w<.");
+            getLogger().info("Loading Complete. >w<");
         } else {
             getLogger().warning("NMS patches were not installed.");
         }
