@@ -5,11 +5,15 @@ import me.liuyingowo.oldcombat.nms.adapter.NmsAdapter;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.logging.Logger;
 
 public final class NmsAdapterImpl implements NmsAdapter {
+
+    private static final double DEFAULT_ENTITY_INTERACTION_RANGE = 3.0D;
+    private static final double DEFAULT_ATTACK_SPEED = 4.0D;
 
     private static final List<AgentPatch> PATCHES = List.of(
             LegacyKnockbackAdvice.patch(),
@@ -26,13 +30,28 @@ public final class NmsAdapterImpl implements NmsAdapter {
 
     @Override
     public void applyLegacyAttackSpeed(org.bukkit.entity.Player player) {
-        applyAttackSpeed(player, Attribute.GENERIC_ATTACK_SPEED);
+        applyAttribute(player, Attribute.GENERIC_ATTACK_SPEED, 100.0D);
     }
 
-    private static void applyAttackSpeed(org.bukkit.entity.Player player, Attribute attribute) {
-        AttributeInstance attackSpeed = player.getAttribute(attribute);
-        if (attackSpeed != null && attackSpeed.getBaseValue() < 100.0D) {
-            attackSpeed.setBaseValue(100.0D);
+    @Override
+    public void restoreLegacyAttackSpeed(Player player) {
+        applyAttribute(player, Attribute.GENERIC_ATTACK_SPEED, DEFAULT_ATTACK_SPEED);
+    }
+
+    @Override
+    public void applyLegacyEntityInteractionRange(Player player, double range) {
+        applyAttribute(player, Attribute.PLAYER_ENTITY_INTERACTION_RANGE, range);
+    }
+
+    @Override
+    public void restoreLegacyEntityInteractionRange(org.bukkit.entity.Player player) {
+        applyAttribute(player, Attribute.PLAYER_ENTITY_INTERACTION_RANGE, DEFAULT_ENTITY_INTERACTION_RANGE);
+    }
+
+    private static void applyAttribute(org.bukkit.entity.Player player, Attribute attribute, double value) {
+        AttributeInstance instance = player.getAttribute(attribute);
+        if (instance != null && instance.getBaseValue() != value) {
+            instance.setBaseValue(value);
         }
     }
 }

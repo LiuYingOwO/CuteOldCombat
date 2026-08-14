@@ -5,12 +5,10 @@
 /core/build/
 /core/nms/build/
 /core/nms/nms-adapter/build/
-/core/nms/nms-adapter/build/classes/java/main/
 /core/nms/nms-v1_20_R4/.gradle/
 /core/nms/nms-v1_20_R4/build/
-/core/nms/nms-v1_20_R4/build/classes/java/main/
 /core/nms/nms-v1_21_R7/.gradle/
 /core/nms/nms-v1_21_R7/build/
-/core/nms/nms-v1_21_R7/build/classes/java/main/
+/core/nms/nms-v26_1/build
+/core/nms/nms-v26_1/.gradle
 /core/plugin/build/
-/core/plugin/build/classes/java/main/

@@ -1,27 +1,14 @@
-# 开启后会接管 Paper 原版的击退计算，并使用下面的参数进行控制.
+enable: true
+
+reach:
+  enabled: true
+  range: 4.5
+
 knockback:
   enabled: false
-
-  # 水平击退倍率。
-  # 会乘在 NMS 传入的击退强度上. 普通近战攻击通常是 0.4.
   horizontal: 1.0
-
-  # 垂直击退力度.
-  # 在摩擦系数处理后, 额外添加到实体当前的 Y 轴速度上.
   vertical: 0.4000000059604645
-
-  # 垂直击退上限.
-  # 添加 vertical 后, 如果向上的速度超过该值, 就会被限制到这个值.
   vertical-limit: 0.4000000059604645
-
-  # 击退前的速度衰减倍率.
-  # Minecraft 1.8 的默认表现通常是 0.5.
   friction: 0.5
-
-  # 最小水平击退方向长度。
-  # 用于忽略过小的水平击退方向，避免极小数值导致异常方向计算。
   min-direction-length: 0.00001
-
-  # 是否应用实体的击退抗性属性?
-  # 开启后, 击退强度会受到 Knockback Resistance 属性影响.
   apply-resistance: true

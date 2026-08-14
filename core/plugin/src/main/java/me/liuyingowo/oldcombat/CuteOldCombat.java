@@ -2,74 +2,51 @@ package me.liuyingowo.oldcombat;
 
 import me.liuyingowo.oldcombat.loader.Installer;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.Locale;
 
 public final class CuteOldCombat extends JavaPlugin {
 
-    private boolean installed;
-    private Command oldCombatCommand;
+    private ReloadCommand oldCombatCommand;
+    private AttributeModifier attributeModifier;
+    private LegacyCombatListener legacyCombatListener;
 
     @Override
     public void onLoad() {
-        loadOldCombatConfig();
-        installed = Installer.install(getLogger(), getConfig());
+        saveDefaultConfig();
+        reloadConfig();
+        getConfig().options().copyDefaults(true);
+        saveConfig();
+
+        Installer.install(getLogger(), getConfig());
     }
 
     @Override
     public void onEnable() {
-        Bukkit.getPluginManager().registerEvents(new LegacyCombatListener(this), this);
-        registerCommand();
+        oldCombatCommand = new ReloadCommand(this);
+        attributeModifier = new AttributeModifier(this);
+        legacyCombatListener = new LegacyCombatListener(this, attributeModifier);
 
-        if (installed) {
-            getLogger().info("Loading Complete. >w<");
-        } else {
-            getLogger().warning("NMS patches were not installed.");
+        attributeModifier.initializeAttributes();
+
+        if (getConfig().getBoolean("enable")) {
+            getServer().getPluginManager().registerEvents(legacyCombatListener, this);
         }
     }
 
     @Override
     public void onDisable() {
-        if (oldCombatCommand != null) {
-            oldCombatCommand.unregister(getServer().getCommandMap());
-            oldCombatCommand = null;
-        }
+        HandlerList.unregisterAll(this);
+        Bukkit.getScheduler().cancelTasks(this);
 
         Installer.uninstall(getLogger());
-    }
 
-    public boolean reloadOldCombat() {
-        loadOldCombatConfig();
-        installed = Installer.install(getLogger(), getConfig());
-        return installed;
-    }
+        attributeModifier.restoreAllAttributesForAllPlayer();
 
-    public boolean isInstalled() {
-        return installed;
-    }
-
-    private void loadOldCombatConfig() {
-        saveDefaultConfig();
-        reloadConfig();
-        getConfig().options().copyDefaults(true);
-        saveConfig();
-    }
-
-    private void registerCommand() {
-        if (getServer().getPluginManager().getPermission("cuteoldcombat.reload") == null) {
-            getServer().getPluginManager().addPermission(
-                    new Permission("cuteoldcombat.reload", PermissionDefault.OP)
-            );
+        if (legacyCombatListener != null) {
+            legacyCombatListener = null;
         }
-
-        oldCombatCommand = new ReloadCommand(this);
-        getServer().getCommandMap().register(
-                getName().toLowerCase(Locale.ROOT),
-                oldCombatCommand
-        );
+        oldCombatCommand.unregister(this);
+        attributeModifier = null;
     }
 }

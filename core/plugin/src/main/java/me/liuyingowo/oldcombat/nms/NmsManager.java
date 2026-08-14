@@ -1,7 +1,6 @@
 package me.liuyingowo.oldcombat.nms;
 
 import me.liuyingowo.oldcombat.nms.adapter.NmsAdapter;
-import org.bukkit.entity.Player;
 
 import java.lang.reflect.Constructor;
 import java.util.logging.Logger;
@@ -15,8 +14,7 @@ public final class NmsManager {
 
     private static volatile NmsAdapter adapter;
 
-    private NmsManager() {
-    }
+    private NmsManager() {}
 
     /**
      * 安装当前版本对应的 NMS 适配器。
@@ -31,6 +29,10 @@ public final class NmsManager {
             logger.severe("Unsupported Minecraft version! Detected: "
                     + Version.getCurrentMinecraftVersion());
             return false;
+        }
+
+        if (adapter != null) {
+            return true;
         }
 
         String className = "me.liuyingowo.oldcombat.nms.impl." + version.name() + ".NmsAdapterImpl";
@@ -65,20 +67,11 @@ public final class NmsManager {
      */
     public static NmsAdapter getAdapter() {
         if (adapter == null) {
-            throw new IllegalStateException(
-                    "NmsAdapter has not been initialized. Call NmsManager.install() during onLoad.");
+            throw new IllegalStateException("NmsAdapter has not been initialized. Call NmsManager.install() during onLoad.");
         }
         return adapter;
     }
 
-    public static void applyLegacyAttackSpeed(Player player) {
-        NmsAdapter current = adapter;
-        if (current == null || player == null) {
-            return;
-        }
-
-        current.applyLegacyAttackSpeed(player);
-    };
     /**
      * 检查适配器是否已安装。
      */

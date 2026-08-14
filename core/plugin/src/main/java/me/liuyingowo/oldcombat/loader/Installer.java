@@ -11,6 +11,7 @@ import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.utility.JavaModule;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.instrument.Instrumentation;
 import java.util.logging.Level;
@@ -24,14 +25,21 @@ public final class Installer {
 
     private Installer() {}
 
-    public static synchronized boolean install(Logger logger, FileConfiguration config) {
+    public static synchronized boolean hasTransformer() {
+        return transformer != null && instrumentation != null;
+    }
+
+    public static synchronized void install(Logger logger, FileConfiguration config) {
+        if (!NmsManager.install(logger)) {
+            logger.severe("Failed to load Nms-adapter. NMS patches disabled.");
+            return;
+        }
+        if (!config.getBoolean("enable")) {
+            logger.info("Patch is disabled in config.");
+            return;
+        }
         try {
             resetCurrentTransformer(logger);
-
-            if (!NmsManager.install(logger)) {
-                logger.severe("Failed to load Nms-adapter. NMS patches disabled.");
-                return false;
-            }
 
             NmsAdapter adapter = NmsManager.getAdapter();
 
@@ -63,20 +71,20 @@ public final class Installer {
                     .disableClassFormatChanges()
                     .with(new AgentBuilder.Listener.Adapter() {
                         @Override
-                        public void onTransformation(TypeDescription typeDescription,
+                        public void onTransformation(@NotNull TypeDescription typeDescription,
                                                      ClassLoader classLoader,
                                                      JavaModule module,
                                                      boolean loaded,
-                                                     DynamicType dynamicType) {
+                                                     @NotNull DynamicType dynamicType) {
                             logger.info("Patched " + typeDescription.getName());
                         }
 
                         @Override
-                        public void onError(String typeName,
+                        public void onError(@NotNull String typeName,
                                             ClassLoader classLoader,
                                             JavaModule module,
                                             boolean loaded,
-                                            Throwable throwable) {
+                                            @NotNull Throwable throwable) {
                             if (typeName.startsWith("net.minecraft.world.entity")) {
                                 logger.log(Level.SEVERE, "Failed to patch " + typeName, throwable);
                             }
@@ -90,10 +98,9 @@ public final class Installer {
             agentBuilder = adapter.apply(agentBuilder, logger);
             transformer = agentBuilder.installOn(instrumentation);
 
-            return true;
+            logger.info("Loading Complete. >w<");
         } catch (Throwable throwable) {
             logger.log(Level.SEVERE, "Could not install NMS patches.", throwable);
-            return false;
         }
     }
 
@@ -133,8 +140,6 @@ public final class Installer {
         if (transformer == null || instrumentation == null) {
             return;
         }
-
-        resolvedFromJavaAgent = false;
 
         try {
             boolean reset = transformer.reset(instrumentation, AgentBuilder.RedefinitionStrategy.RETRANSFORMATION);

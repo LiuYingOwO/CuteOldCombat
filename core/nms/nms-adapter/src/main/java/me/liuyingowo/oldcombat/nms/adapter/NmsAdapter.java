@@ -1,5 +1,6 @@
 package me.liuyingowo.oldcombat.nms.adapter;
 
+import org.bukkit.entity.Player;
 import net.bytebuddy.agent.builder.AgentBuilder;
 
 public interface NmsAdapter {
@@ -13,5 +14,11 @@ public interface NmsAdapter {
      */
     AgentBuilder apply(AgentBuilder agentBuilder, java.util.logging.Logger logger);
 
-    void applyLegacyAttackSpeed(org.bukkit.entity.Player player);
+    void applyLegacyAttackSpeed(Player player);
+
+    void restoreLegacyAttackSpeed(Player player);
+
+    void applyLegacyEntityInteractionRange(Player player, double range);
+
+    void restoreLegacyEntityInteractionRange(Player player);
 }
