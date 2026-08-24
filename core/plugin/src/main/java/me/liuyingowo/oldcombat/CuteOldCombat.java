@@ -41,12 +41,37 @@ public final class CuteOldCombat extends JavaPlugin {
 
         Installer.uninstall(getLogger());
 
-        attributeModifier.restoreAllAttributesForAllPlayer();
+        if (attributeModifier != null) {
+            attributeModifier.restoreAllAttributesForAllPlayer();
+        }
+        if (oldCombatCommand != null) {
+            oldCombatCommand.unregister(this);
+        }
+        legacyCombatListener = null;
+        attributeModifier = null;
+    }
 
-        if (legacyCombatListener != null) {
+    public void reload() {
+        HandlerList.unregisterAll(this);
+        Bukkit.getScheduler().cancelTasks(this);
+
+        saveDefaultConfig();
+        reloadConfig();
+        getConfig().options().copyDefaults(true);
+        saveConfig();
+
+        Installer.uninstall(getLogger());
+
+        if (getConfig().getBoolean("enable")) {
+            Installer.install(getLogger(), getConfig());
+            attributeModifier = new AttributeModifier(this);
+            legacyCombatListener = new LegacyCombatListener(this, attributeModifier);
+            attributeModifier.initializeAttributes();
+            getServer().getPluginManager().registerEvents(legacyCombatListener, this);
+        } else {
+            attributeModifier = new AttributeModifier(this);
+            attributeModifier.initializeAttributes();
             legacyCombatListener = null;
         }
-        oldCombatCommand.unregister(this);
-        attributeModifier = null;
     }
 }

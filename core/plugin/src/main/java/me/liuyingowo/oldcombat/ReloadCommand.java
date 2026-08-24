@@ -59,9 +59,7 @@ public final class ReloadCommand extends Command implements PluginIdentifiableCo
 
         if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
 
-            plugin.onDisable();
-            plugin.onLoad();
-            plugin.onEnable();
+            plugin.reload();
 
             sender.sendMessage("§a插件重载成功!");
             return true;

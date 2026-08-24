@@ -35,14 +35,23 @@ public class AttributeModifier {
     }
 
     public void applyAttributes(Player player) {
-        if (plugin.getConfig().getBoolean("reach.enabled")) {
-            NmsManager.getAdapter().applyLegacyEntityInteractionRange(player, plugin.getConfig().getDouble("reach.range"));
+        if (player == null || !NmsManager.isInstalled()) {
+            return;
         }
-        NmsManager.getAdapter().applyLegacyAttackSpeed(player);
+        var adapter = NmsManager.getAdapter();
+        if (plugin.getConfig().getBoolean("reach.enabled")) {
+            adapter.applyLegacyEntityInteractionRange(player, plugin.getConfig().getDouble("reach.range"));
+        }
+        adapter.applyLegacyAttackSpeed(player);
     }
 
     public void restoreAttributes(Player player) {
-        NmsManager.getAdapter().restoreLegacyEntityInteractionRange(player);
-        NmsManager.getAdapter().restoreLegacyAttackSpeed(player);
+        if (player == null || !NmsManager.isInstalled()) {
+            return;
+        }
+        var adapter = NmsManager.getAdapter();
+
+        adapter.restoreLegacyEntityInteractionRange(player);
+        adapter.restoreLegacyAttackSpeed(player);
     }
 }
