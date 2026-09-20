@@ -1,7 +1,6 @@
 package me.liuyingowo.oldcombat;
 
 import me.liuyingowo.oldcombat.loader.Installer;
-import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -37,7 +36,6 @@ public final class CuteOldCombat extends JavaPlugin {
     @Override
     public void onDisable() {
         HandlerList.unregisterAll(this);
-        Bukkit.getScheduler().cancelTasks(this);
 
         Installer.uninstall(getLogger());
 
@@ -53,7 +51,6 @@ public final class CuteOldCombat extends JavaPlugin {
 
     public void reload() {
         HandlerList.unregisterAll(this);
-        Bukkit.getScheduler().cancelTasks(this);
 
         saveDefaultConfig();
         reloadConfig();
