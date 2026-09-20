@@ -1,4 +1,4 @@
-package me.liuyingowo.oldcombat.impl.v26_2;
+package me.liuyingowo.oldcombat.nms.impl.v26_2;
 
 import me.liuyingowo.oldcombat.nms.adapter.AgentPatch;
 import me.liuyingowo.oldcombat.nms.adapter.NmsAdapter;
@@ -15,7 +15,11 @@ public class NmsAdapterImpl implements NmsAdapter {
     private static final double DEFAULT_ATTACK_SPEED = 4.0D;
 
     private static final List<AgentPatch> PATCHES = List.of(
-
+            LegacyAttackAdvice.patch(),
+            LegacyDamageAdvice.patch(),
+            LegacyKnockbackAdvice.patch(),
+            LegacySoundEffectAdvice.patch(),
+            LegacySweepAttackAdvice.patch()
     );
 
     @Override

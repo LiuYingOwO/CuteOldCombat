@@ -1,4 +1,4 @@
-package me.liuyingowo.oldcombat.impl.v26_2;
+package me.liuyingowo.oldcombat.nms.impl.v26_2;
 
 import me.liuyingowo.oldcombat.nms.adapter.AgentPatch;
 import net.bytebuddy.asm.Advice;

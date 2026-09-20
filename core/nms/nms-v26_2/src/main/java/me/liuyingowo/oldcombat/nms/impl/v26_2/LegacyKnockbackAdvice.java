@@ -1,16 +1,18 @@
-package me.liuyingowo.oldcombat.impl.v26_2;
+package me.liuyingowo.oldcombat.nms.impl.v26_2;
 
 import io.papermc.paper.event.entity.EntityKnockbackEvent;
 import me.liuyingowo.oldcombat.nms.adapter.AgentPatch;
 import me.liuyingowo.oldcombat.nms.adapter.KnockbackBridge;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.matcher.ElementMatchers;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
+import org.jspecify.annotations.Nullable;
 
 public class LegacyKnockbackAdvice {
 
@@ -42,8 +44,11 @@ public class LegacyKnockbackAdvice {
                                   @Advice.Argument(0) double strength,
                                   @Advice.Argument(1) double x,
                                   @Advice.Argument(2) double z,
-                                  @Advice.Argument(3) Entity attacker,
-                                  @Advice.Argument(4) EntityKnockbackEvent.Cause cause) {
+                                  @Advice.Argument(3) DamageSource source,
+                                  @Advice.Argument(4) float damage,
+                                  @Advice.Argument(5) boolean comesFromEffect,
+                                  @Advice.Argument(6) @Nullable Entity attacker,
+                                  @Advice.Argument(7) EntityKnockbackEvent.Cause cause) {
         if (!KnockbackBridge.enabled) {
             return false;
         }
