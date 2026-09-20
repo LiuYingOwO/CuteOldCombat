@@ -19,12 +19,11 @@
 ## Requirements
 - Java 21+
 - Paper / Paper-fork server
-- JVM flags (Optional):
+- JVM flags (Optional, choose one of the two):
 ```bash
 -Djdk.attach.allowAttachSelf=true
 -XX:+EnableDynamicAgentLoading
 ```
-或
 ```bash
 -javaagent:plugins/CuteOldCombat.jar
 ``` 
