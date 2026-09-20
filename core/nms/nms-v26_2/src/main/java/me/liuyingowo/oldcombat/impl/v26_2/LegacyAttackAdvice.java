@@ -1,4 +1,4 @@
-package me.liuyingowo.oldcombat.nms.impl.v26_1;
+package me.liuyingowo.oldcombat.impl.v26_2;
 
 import me.liuyingowo.oldcombat.nms.adapter.AgentPatch;
 import net.bytebuddy.asm.Advice;
@@ -7,14 +7,14 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
-public final class LegacyAttackAdvice {
+public class LegacyAttackAdvice {
 
     private LegacyAttackAdvice() {
     }
 
     public static AgentPatch patch() {
         return (agentBuilder, logger) -> agentBuilder
-                .type(ElementMatchers.named(Player.class.getName()))
+                .type(ElementMatchers.named(net.minecraft.world.entity.player.Player.class.getName()))
                 .transform((builder, typeDescription, classLoader, javaModule, protectionDomain) ->
                         builder
                                 .visit(Advice.to(AttackSubAdvice.class)
@@ -39,8 +39,8 @@ public final class LegacyAttackAdvice {
     public static class CriticalSubAdvice {
         @Advice.OnMethodExit
         public static void onExit(@Advice.This Player attacker,
-                                     @Advice.Argument(0) Entity target,
-                                     @Advice.Return(readOnly = false) boolean returnValue) {
+                                  @Advice.Argument(0) Entity target,
+                                  @Advice.Return(readOnly = false) boolean returnValue) {
             if (!returnValue) {
                 if (attacker.fallDistance > 0.0f
                         && !attacker.onGround()

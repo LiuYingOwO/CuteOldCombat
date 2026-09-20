@@ -16,4 +16,6 @@ include 'core:plugin',
         'core:nms:nms-adapter',
         'core:nms:nms-v1_20_R4',
         'core:nms:nms-v1_21_R7',
-        'core:nms:nms-v26_1'
+        'core:nms:nms-v26_1',
+        'core:nms:nms-v26_2',
+        'core:nms:nms-v26_3'
