@@ -1,6 +1,6 @@
 # CuteOldCombat
 
-> A Paper plugin that restores 1.8-style combat behavior on modern Minecraft servers through NMS and ByteBuddy hooks.
+> A Paper/Folia plugin that restores 1.8-style combat behavior on modern Minecraft servers through NMS and ByteBuddy hooks.
 
 ## Features
 - 取消攻击冷却
@@ -29,6 +29,8 @@
 ``` 
 
 ## Supported Versions
+注意. 此插件仅支持Paper/Folia, 目前无法在Bukkit/Spigot上运行.
+
 当前代码中已经声明的版本：
 
 | Minecraft | Adapter |
