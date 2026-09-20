@@ -5,6 +5,8 @@ description: Restores legacy 1.8-style combat through Java instrumentation.
 main: me.liuyingowo.oldcombat.CuteOldCombat
 api-version: '1.20'
 
+folia-supported: true
+
 paperweight-mappings-namespace: mojang
 
 permissions:

@@ -107,5 +107,5 @@ public class LegacyKnockbackAdvice {
         entity.setDeltaMovement(current.add(knockback.getX(), knockback.getY(), knockback.getZ()));
 
         return true;
-        }
+    }
 }

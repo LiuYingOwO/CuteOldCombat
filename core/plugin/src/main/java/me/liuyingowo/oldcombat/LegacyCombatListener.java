@@ -29,24 +29,28 @@ public final class LegacyCombatListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        attributeModifier.applyAttributes(event.getPlayer());
-        plugin.getServer().getScheduler().runTaskLater(plugin, () -> attributeModifier.applyAttributes(event.getPlayer()), 1L);
+        var player = event.getPlayer();
+        attributeModifier.applyAttributes(player);
+        player.getScheduler().runDelayed(plugin, scheduledTask -> attributeModifier.applyAttributes(player), null, 1L);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        plugin.getServer().getScheduler().runTaskLater(plugin, () -> attributeModifier.applyAttributes(event.getPlayer()), 1L);
+        var player = event.getPlayer();
+        player.getScheduler().runDelayed(plugin, scheduledTask -> attributeModifier.applyAttributes(player), null, 1L);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
+        var player = event.getPlayer();
         attributeModifier.applyAttributes(event.getPlayer());
-        plugin.getServer().getScheduler().runTaskLater(plugin, () -> attributeModifier.applyAttributes(event.getPlayer()), 1L);
+        player.getScheduler().runDelayed(plugin, scheduledTask -> attributeModifier.applyAttributes(player), null, 1L);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerItemHeld(PlayerItemHeldEvent event) {
-        plugin.getServer().getScheduler().runTaskLater(plugin, () -> attributeModifier.applyAttributes(event.getPlayer()), 1L);
+        var player = event.getPlayer();
+        player.getScheduler().runDelayed(plugin, scheduledTask -> attributeModifier.applyAttributes(player), null, 1L);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
