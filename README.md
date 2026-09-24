@@ -1,20 +1,21 @@
 # CuteOldCombat
 
-> A Paper/Folia plugin that restores 1.8-style combat behavior on modern Minecraft servers through NMS and ByteBuddy hooks.
+> A drop-in Paper/Folia plugin that restores 1.8-style combat behavior by patching the server via dynamic Java agent attach.
 
 ## Features
 - 取消攻击冷却
 - 可调战斗相关 Attribute
-- 禁用横扫攻击判定与横扫伤害
+- 禁用横扫攻击判定及横扫伤害
 - 禁用横扫攻击音效
-- 可选替换 击退参数, 默认提供1.8战斗机制算法
-- 支持nms-patch以及knockback设置热重载
+- 可选替换击退参数, 默认提供1.8原生击退参数
+- 支持 Patch / Knockback 设置热重载
 
 ## Warnings
-这是一个侵入式插件, 由于直接修改了服务端底层, 请注意：
+这是一个侵入式插件.
+由于直接作用于服务端底层, 请注意:
 
-- 其他修改攻击、击退、伤害流程的插件可能与本插件冲突。
-- ByteBuddy 在某些 JVM 参数或其他 JDK 下可能失败。
+- 其他修改攻击、击退、伤害流程的插件可能与本插件冲突.
+- 在不用-javaagent参数时, 工作方式依赖于动态Attach, 可能会出现意料之外的问题.
 
 ## Requirements
 - Java 21+
@@ -29,7 +30,7 @@
 ``` 
 
 ## Supported Versions
-注意. 此插件仅支持Paper/Folia, 目前无法在Bukkit/Spigot上运行.
+*注意: 此插件仅支持Paper/Folia, 目前无法在Bukkit/Spigot上运行.
 
 当前代码中已经声明的版本：
 
@@ -42,7 +43,7 @@
 
 ## Configuration
 
-默认配置：
+默认击退参数配置：
 
 ```yml
 knockback:
