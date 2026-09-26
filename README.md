@@ -73,5 +73,6 @@ knockback:
 | `min-direction-length` | 忽略极小水平方向，避免异常方向向量 |
 | `apply-resistance` | 是否应用实体的 knockback resistance 属性 |
 
-许可证
+### 许可证
+
 本项目采用 GNU General Public License v3.0 许可证。
