@@ -1,6 +1,5 @@
 package me.liuyingowo.oldcombat.loader;
 
-import me.liuyingowo.oldcombat.nms.adapter.KnockbackInstaller;
 import me.liuyingowo.oldcombat.nms.adapter.NmsAdapter;
 import me.liuyingowo.oldcombat.nms.NmsManager;
 import net.bytebuddy.agent.ByteBuddyAgent;
@@ -17,13 +16,13 @@ import java.lang.instrument.Instrumentation;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public final class Installer {
+public final class PatchInstaller {
 
     private static Instrumentation instrumentation;
     private static ResettableClassFileTransformer transformer;
     private static boolean resolvedFromJavaAgent = false;
 
-    private Installer() {}
+    private PatchInstaller() {}
 
     public static synchronized boolean hasTransformer() {
         return transformer != null && instrumentation != null;
@@ -64,7 +63,7 @@ public final class Installer {
             }
 
             KnockbackInstaller.injectIfNeeded(instrumentation, logger);
-            syncKnockbackBridge(config, logger);
+            KnockbackInstaller.sync(config, logger);
 
             AgentBuilder agentBuilder = new AgentBuilder.Default()
                     .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
@@ -106,34 +105,6 @@ public final class Installer {
 
     public static synchronized void uninstall(Logger logger) {
         resetCurrentTransformer(logger);
-    }
-
-    private static void syncKnockbackBridge(FileConfiguration config, Logger logger) {
-        boolean enabled = config.getBoolean("knockback.enabled", KnockbackInstaller.DEFAULT_ENABLED);
-        double horizontal = config.getDouble("knockback.horizontal", KnockbackInstaller.DEFAULT_HORIZONTAL);
-        double vertical = config.getDouble("knockback.vertical", KnockbackInstaller.DEFAULT_VERTICAL);
-        double verticalLimit = config.getDouble("knockback.vertical-limit", KnockbackInstaller.DEFAULT_VERTICAL_LIMIT);
-        double friction = config.getDouble("knockback.friction", KnockbackInstaller.DEFAULT_FRICTION);
-        double minDirectionLength = config.getDouble("knockback.min-direction-length", KnockbackInstaller.DEFAULT_MIN_DIRECTION_LENGTH);
-        boolean applyResistance = config.getBoolean("knockback.apply-resistance", KnockbackInstaller.DEFAULT_APPLY_RESISTANCE);
-
-        KnockbackInstaller.update(
-                enabled,
-                horizontal,
-                vertical,
-                verticalLimit,
-                friction,
-                minDirectionLength,
-                applyResistance
-        );
-
-        logger.info("Knockback bridge updated: enabled=" + enabled
-                + ", horizontal=" + horizontal
-                + ", vertical=" + vertical
-                + ", verticalLimit=" + verticalLimit
-                + ", friction=" + friction
-                + ", minDirectionLength=" + minDirectionLength
-                + ", applyResistance=" + applyResistance);
     }
     
     private static void resetCurrentTransformer(Logger logger) {

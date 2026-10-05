@@ -1,6 +1,6 @@
 package me.liuyingowo.oldcombat;
 
-import me.liuyingowo.oldcombat.loader.Installer;
+import me.liuyingowo.oldcombat.loader.PatchInstaller;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -17,7 +17,7 @@ public final class CuteOldCombat extends JavaPlugin {
         getConfig().options().copyDefaults(true);
         saveConfig();
 
-        Installer.install(getLogger(), getConfig());
+        PatchInstaller.install(getLogger(), getConfig());
     }
 
     @Override
@@ -37,7 +37,7 @@ public final class CuteOldCombat extends JavaPlugin {
     public void onDisable() {
         HandlerList.unregisterAll(this);
 
-        Installer.uninstall(getLogger());
+        PatchInstaller.uninstall(getLogger());
 
         if (attributeModifier != null) {
             attributeModifier.restoreAllAttributesForAllPlayer();
@@ -57,10 +57,10 @@ public final class CuteOldCombat extends JavaPlugin {
         getConfig().options().copyDefaults(true);
         saveConfig();
 
-        Installer.uninstall(getLogger());
+        PatchInstaller.uninstall(getLogger());
 
         if (getConfig().getBoolean("enable")) {
-            Installer.install(getLogger(), getConfig());
+            PatchInstaller.install(getLogger(), getConfig());
             attributeModifier = new AttributeModifier(this);
             legacyCombatListener = new LegacyCombatListener(this, attributeModifier);
             attributeModifier.initializeAttributes();
