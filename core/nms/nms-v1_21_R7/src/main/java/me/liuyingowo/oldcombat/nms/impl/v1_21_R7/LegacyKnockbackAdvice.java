@@ -11,6 +11,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
+import org.jetbrains.annotations.Nullable;
 
 public final class LegacyKnockbackAdvice {
 
@@ -31,14 +32,14 @@ public final class LegacyKnockbackAdvice {
         };
     }
 
-    /**
-     * 使用 {@code @AllArguments} 动态适配不同 Paper/Leaf fork 的参数数量差异。
-     * <p>参数顺序始终为: {@code (double strength, double x, double z, ...)}
-     * 后续可选参数: {@code Entity attacker}, {@code Entity damager}, {@code Cause cause}
-     */
     @Advice.OnMethodEnter(skipOn = Advice.OnNonDefaultValue.class)
-    public static boolean onEnter(@Advice.This LivingEntity entity,
-                                  @Advice.AllArguments Object[] args) {
+    public static boolean onEnter1(@Advice.This LivingEntity entity,
+                                   @Advice.Argument(0) double strength,
+                                   @Advice.Argument(1) double x,
+                                   @Advice.Argument(2) double z,
+                                   @Advice.Argument(3) @Nullable Entity attacker,
+                                   @Advice.Argument(4) EntityKnockbackEvent.Cause eventCause) {
+
         if (!KnockbackBridge.enabled) {
             return false;
         }
@@ -50,32 +51,7 @@ public final class LegacyKnockbackAdvice {
         double minDirectionLength = KnockbackBridge.minDirectionLength;
         boolean applyResistance = KnockbackBridge.applyResistance;
 
-        double strength = (double) args[0];
-        double x = (double) args[1];
-        double z = (double) args[2];
-
-        Entity attacker = null;
-        Entity damager = null;
-        EntityKnockbackEvent.Cause cause = EntityKnockbackEvent.Cause.UNKNOWN;
-
-        int len = args.length;
-        if (len > 3 && args[3] instanceof Entity) {
-            attacker = (Entity) args[3];
-        }
-        if (len > 4 && args[4] instanceof Entity) {
-            damager = (Entity) args[4];
-        }
-        if (len > 5 && args[5] instanceof EntityKnockbackEvent.Cause) {
-            cause = (EntityKnockbackEvent.Cause) args[5];
-        } else if (len > 4 && args[4] instanceof EntityKnockbackEvent.Cause) {
-            cause = (EntityKnockbackEvent.Cause) args[4];
-        } else if (len > 3 && args[3] instanceof EntityKnockbackEvent.Cause) {
-            cause = (EntityKnockbackEvent.Cause) args[3];
-        }
-
-        if (damager == null) {
-            damager = attacker;
-        }
+        Entity damager = attacker;
 
         double adjustedStrength = strength;
         if (applyResistance) {
@@ -84,6 +60,7 @@ public final class LegacyKnockbackAdvice {
         adjustedStrength *= horizontal;
 
         Vec3 current = entity.getDeltaMovement();
+
         double nextX = current.x() * friction;
         double nextY = current.y() * friction;
         double nextZ = current.z() * friction;
@@ -106,7 +83,7 @@ public final class LegacyKnockbackAdvice {
                 (CraftLivingEntity) entity.getBukkitEntity(),
                 attacker,
                 damager,
-                cause,
+                eventCause,
                 adjustedStrength,
                 delta
         );
@@ -116,8 +93,10 @@ public final class LegacyKnockbackAdvice {
         }
 
         org.bukkit.util.Vector knockback = event.getKnockback();
+
         entity.needsSync = true;
         entity.setDeltaMovement(current.add(knockback.getX(), knockback.getY(), knockback.getZ()));
+
         return true;
     }
 }
