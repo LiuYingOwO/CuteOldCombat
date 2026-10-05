@@ -39,10 +39,13 @@ public class AttributeModifier {
             return;
         }
         var adapter = NmsManager.getAdapter();
-        if (plugin.getConfig().getBoolean("reach.enabled")) {
-            adapter.applyLegacyEntityInteractionRange(player, plugin.getConfig().getDouble("reach.range"));
-        }
-        adapter.applyLegacyAttackSpeed(player);
+
+        player.getScheduler().run(plugin, (scheduledTask -> {
+            if (plugin.getConfig().getBoolean("reach.enabled")) {
+                adapter.applyLegacyEntityInteractionRange(player, plugin.getConfig().getDouble("reach.range"));
+            }
+            adapter.applyLegacyAttackSpeed(player);
+        }), null);
     }
 
     public void restoreAttributes(Player player) {
@@ -51,7 +54,9 @@ public class AttributeModifier {
         }
         var adapter = NmsManager.getAdapter();
 
-        adapter.restoreLegacyEntityInteractionRange(player);
-        adapter.restoreLegacyAttackSpeed(player);
+        player.getScheduler().run(plugin, (scheduledTask -> {
+            adapter.restoreLegacyEntityInteractionRange(player);
+            adapter.restoreLegacyAttackSpeed(player);
+        }), null);
     }
 }
