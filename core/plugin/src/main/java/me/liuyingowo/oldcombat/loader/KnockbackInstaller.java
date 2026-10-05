@@ -1,6 +1,7 @@
-package me.liuyingowo.oldcombat.nms.adapter;
+package me.liuyingowo.oldcombat.loader;
 
 import net.bytebuddy.dynamic.loading.ClassInjector;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,6 +49,34 @@ public final class KnockbackInstaller {
 
         injected = true;
         logger.info("Knockback bridge injected into bootstrap classloader.");
+    }
+
+    public static void sync(FileConfiguration config, Logger logger) {
+        boolean enabled = config.getBoolean("knockback.enabled", KnockbackInstaller.DEFAULT_ENABLED);
+        double horizontal = config.getDouble("knockback.horizontal", KnockbackInstaller.DEFAULT_HORIZONTAL);
+        double vertical = config.getDouble("knockback.vertical", KnockbackInstaller.DEFAULT_VERTICAL);
+        double verticalLimit = config.getDouble("knockback.vertical-limit", KnockbackInstaller.DEFAULT_VERTICAL_LIMIT);
+        double friction = config.getDouble("knockback.friction", KnockbackInstaller.DEFAULT_FRICTION);
+        double minDirectionLength = config.getDouble("knockback.min-direction-length", KnockbackInstaller.DEFAULT_MIN_DIRECTION_LENGTH);
+        boolean applyResistance = config.getBoolean("knockback.apply-resistance", KnockbackInstaller.DEFAULT_APPLY_RESISTANCE);
+
+        KnockbackInstaller.update(
+                enabled,
+                horizontal,
+                vertical,
+                verticalLimit,
+                friction,
+                minDirectionLength,
+                applyResistance
+        );
+
+        logger.info("Knockback bridge updated: enabled=" + enabled
+                + ", horizontal=" + horizontal
+                + ", vertical=" + vertical
+                + ", verticalLimit=" + verticalLimit
+                + ", friction=" + friction
+                + ", minDirectionLength=" + minDirectionLength
+                + ", applyResistance=" + applyResistance);
     }
 
     public static void update(boolean enabled,
