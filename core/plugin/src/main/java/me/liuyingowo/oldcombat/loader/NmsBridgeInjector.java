@@ -20,7 +20,8 @@ import java.util.logging.Logger;
 
 public final class NmsBridgeInjector {
 
-    private static final String BASE_BRIDGE_CLASS_NAME = "me.liuyingowo.oldcombat.nms.adapter.NmsBridge";
+    private static final String BASE_BRIDGE_CLASS_NAME = "me.liuyingowo.oldcombat.nms.adapter.KnockbackBridge";
+    private static final String BRIDGE_CLASS_RESOURCE_PATH = "me/liuyingowo/oldcombat/nms/adapter/KnockbackBridge";
 
     private static volatile boolean injected;
 
@@ -153,7 +154,7 @@ public final class NmsBridgeInjector {
             try (var jar = new JarFile(path.toFile())) {
                 jar.stream()
                         .filter(jarEntry -> !jarEntry.isDirectory())
-                        .filter(e -> e.getName().startsWith("me/liuyingowo/oldcombat/nms/adapter/NmsBridge"))
+                        .filter(e -> e.getName().startsWith(BRIDGE_CLASS_RESOURCE_PATH))
                         .filter(e -> e.getName().endsWith(".class"))
                         .forEach(e -> {
                             try (InputStream in = jar.getInputStream(e)) {
@@ -167,6 +168,9 @@ public final class NmsBridgeInjector {
                                 throw new UncheckedIOException(ex);
                             }
                         });
+            }
+            if (map.isEmpty()) {
+                throw new IllegalStateException("Bridge class is not found.");
             }
             return map;
 
