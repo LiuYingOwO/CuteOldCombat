@@ -70,6 +70,10 @@ public final class PatchInstaller {
             agentBuilder = adapter.apply(agentBuilder, logger);
             transformer = agentBuilder.installOn(instrumentation);
 
+            // will avoid stacktrace while replacing plugin:
+            // java.lang.NoClassDefFoundError: net/bytebuddy/agent/builder/AgentBuilder$CircularityLock$Inactive
+            AgentBuilder.CircularityLock.Inactive.INSTANCE.acquire();
+
             logger.info("Loading Complete. >w<");
         } catch (Throwable throwable) {
             logger.log(Level.SEVERE, "Could not install NMS patches.", throwable);
