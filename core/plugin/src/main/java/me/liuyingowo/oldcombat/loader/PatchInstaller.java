@@ -2,7 +2,6 @@ package me.liuyingowo.oldcombat.loader;
 
 import me.liuyingowo.oldcombat.nms.adapter.NmsAdapter;
 import me.liuyingowo.oldcombat.nms.NmsManager;
-import net.bytebuddy.agent.ByteBuddyAgent;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.agent.builder.ResettableClassFileTransformer;
 import net.bytebuddy.description.type.TypeDescription;
@@ -18,17 +17,15 @@ import java.util.logging.Logger;
 
 public final class PatchInstaller {
 
-    private static Instrumentation instrumentation;
     private static ResettableClassFileTransformer transformer;
-    private static boolean resolvedFromJavaAgent = false;
 
     private PatchInstaller() {}
 
     public static synchronized boolean hasTransformer() {
-        return transformer != null && instrumentation != null;
+        return transformer != null;
     }
 
-    public static synchronized void install(Logger logger, FileConfiguration config) {
+    public static synchronized void install(Instrumentation instrumentation, Logger logger, FileConfiguration config) {
         if (!NmsManager.install(logger)) {
             logger.severe("Failed to load Nms-adapter. NMS patches disabled.");
             return;
@@ -38,32 +35,8 @@ public final class PatchInstaller {
             return;
         }
         try {
-            resetCurrentTransformer(logger);
-
+            resetCurrentTransformer(instrumentation, logger);
             NmsAdapter adapter = NmsManager.getAdapter();
-
-            if (instrumentation == null) {
-                instrumentation = Agent.findInstrumentation();
-
-                if (instrumentation != null) {
-                    resolvedFromJavaAgent = true;
-                    logger.info("Using Instrumentation from -javaagent.");
-                }
-            }
-
-            if (instrumentation == null) {
-                logger.info("Installing agent dynamically...");
-
-                instrumentation = ByteBuddyAgent.install();
-                resolvedFromJavaAgent = true;
-
-                logger.info("Using Instrumentation from dynamic agent.");
-            } else if (!resolvedFromJavaAgent) {
-                logger.info("Reusing existing Instrumentation.");
-            }
-
-            KnockbackInstaller.injectIfNeeded(instrumentation, logger);
-            KnockbackInstaller.sync(config, logger);
 
             AgentBuilder agentBuilder = new AgentBuilder.Default()
                     .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
@@ -103,11 +76,11 @@ public final class PatchInstaller {
         }
     }
 
-    public static synchronized void uninstall(Logger logger) {
-        resetCurrentTransformer(logger);
+    public static synchronized void uninstall(Instrumentation instrumentation, Logger logger) {
+        resetCurrentTransformer(instrumentation, logger);
     }
     
-    private static void resetCurrentTransformer(Logger logger) {
+    private static void resetCurrentTransformer(Instrumentation instrumentation, Logger logger) {
         if (transformer == null || instrumentation == null) {
             return;
         }

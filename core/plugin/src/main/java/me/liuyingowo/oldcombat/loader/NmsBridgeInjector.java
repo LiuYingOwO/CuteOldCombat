@@ -5,17 +5,22 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Method;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.jar.JarFile;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public final class KnockbackInstaller {
+public final class NmsBridgeInjector {
 
-    private static final String BRIDGE_CLASS_NAME = "me.liuyingowo.oldcombat.nms.adapter.KnockbackBridge";
-    private static final String BRIDGE_RESOURCE = "me/liuyingowo/oldcombat/nms/adapter/KnockbackBridge.class";
+    private static final String BASE_BRIDGE_CLASS_NAME = "me.liuyingowo.oldcombat.nms.adapter.NmsBridge";
 
     private static volatile boolean injected;
 
@@ -27,9 +32,9 @@ public final class KnockbackInstaller {
     public static final double DEFAULT_MIN_DIRECTION_LENGTH = 1.0E-5D;
     public static final boolean DEFAULT_APPLY_RESISTANCE = true;
 
-    private KnockbackInstaller() {}
+    private NmsBridgeInjector() {}
 
-    public static synchronized void injectIfNeeded(Instrumentation instrumentation, Logger logger) throws IOException {
+    public static synchronized void injectIfNeeded(Instrumentation instrumentation, Logger logger) {
         if (instrumentation == null) {
             throw new IllegalArgumentException("instrumentation");
         }
@@ -39,28 +44,38 @@ public final class KnockbackInstaller {
             return;
         }
 
-        byte[] bridgeBytes = readBridgeBytes();
-        Path temp = Files.createTempDirectory("cuteoldcombat-bridge");
-        temp.toFile().deleteOnExit();
+        try {
+            Path temp = Files.createTempDirectory("cuteoldcombat-bridge");
+            temp.toFile().deleteOnExit();
 
-        ClassInjector.UsingInstrumentation
-                .of(temp.toFile(), ClassInjector.UsingInstrumentation.Target.BOOTSTRAP, instrumentation)
-                .injectRaw(Map.of(BRIDGE_CLASS_NAME, bridgeBytes));
+            var injector = ClassInjector.UsingInstrumentation
+                    .of(
+                            temp.toFile(),
+                            ClassInjector.UsingInstrumentation.Target.BOOTSTRAP,
+                            instrumentation
+                    );
 
-        injected = true;
-        logger.info("Knockback bridge injected into bootstrap classloader.");
+            injector.injectRaw(readAllBridges(logger));
+
+            injected = true;
+            logger.info("All Bridge injected into bootstrap classloader.");
+
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Failed to create files", e);
+        }
+
     }
 
     public static void sync(FileConfiguration config, Logger logger) {
-        boolean enabled = config.getBoolean("knockback.enabled", KnockbackInstaller.DEFAULT_ENABLED);
-        double horizontal = config.getDouble("knockback.horizontal", KnockbackInstaller.DEFAULT_HORIZONTAL);
-        double vertical = config.getDouble("knockback.vertical", KnockbackInstaller.DEFAULT_VERTICAL);
-        double verticalLimit = config.getDouble("knockback.vertical-limit", KnockbackInstaller.DEFAULT_VERTICAL_LIMIT);
-        double friction = config.getDouble("knockback.friction", KnockbackInstaller.DEFAULT_FRICTION);
-        double minDirectionLength = config.getDouble("knockback.min-direction-length", KnockbackInstaller.DEFAULT_MIN_DIRECTION_LENGTH);
-        boolean applyResistance = config.getBoolean("knockback.apply-resistance", KnockbackInstaller.DEFAULT_APPLY_RESISTANCE);
+        boolean enabled = config.getBoolean("knockback.enabled", NmsBridgeInjector.DEFAULT_ENABLED);
+        double horizontal = config.getDouble("knockback.horizontal", NmsBridgeInjector.DEFAULT_HORIZONTAL);
+        double vertical = config.getDouble("knockback.vertical", NmsBridgeInjector.DEFAULT_VERTICAL);
+        double verticalLimit = config.getDouble("knockback.vertical-limit", NmsBridgeInjector.DEFAULT_VERTICAL_LIMIT);
+        double friction = config.getDouble("knockback.friction", NmsBridgeInjector.DEFAULT_FRICTION);
+        double minDirectionLength = config.getDouble("knockback.min-direction-length", NmsBridgeInjector.DEFAULT_MIN_DIRECTION_LENGTH);
+        boolean applyResistance = config.getBoolean("knockback.apply-resistance", NmsBridgeInjector.DEFAULT_APPLY_RESISTANCE);
 
-        KnockbackInstaller.update(
+        NmsBridgeInjector.update(
                 enabled,
                 horizontal,
                 vertical,
@@ -88,7 +103,7 @@ public final class KnockbackInstaller {
                               boolean applyResistance) {
 
         try {
-            Class<?> bridgeClass = Class.forName(BRIDGE_CLASS_NAME, true, null);
+            Class<?> bridgeClass = Class.forName(BASE_BRIDGE_CLASS_NAME, true, null);
             Method update = bridgeClass.getMethod(
                     "update",
                     boolean.class,
@@ -121,21 +136,42 @@ public final class KnockbackInstaller {
 
     private static boolean isBootstrapBridgePresent() {
         try {
-            Class.forName(BRIDGE_CLASS_NAME, false, null);
+            Class.forName(BASE_BRIDGE_CLASS_NAME, false, null);
             return true;
         } catch (ClassNotFoundException ignored) {
             return false;
         }
     }
 
-    private static byte[] readBridgeBytes() throws IOException {
-        ClassLoader loader = KnockbackInstaller.class.getClassLoader();
-        try (InputStream input = loader.getResourceAsStream(BRIDGE_RESOURCE)) {
-            if (input == null) {
-                throw new IOException("Missing class resource: " + BRIDGE_RESOURCE);
-            }
+    private static Map<String, byte[]> readAllBridges(Logger logger) throws IOException {
+        Map<String, byte[]> map = new HashMap<>();
 
-            return input.readAllBytes();
+        try {
+            URL url = NmsBridgeInjector.class.getProtectionDomain().getCodeSource().getLocation();
+            Path path = Path.of(url.toURI());
+
+            try (var jar = new JarFile(path.toFile())) {
+                jar.stream()
+                        .filter(jarEntry -> !jarEntry.isDirectory())
+                        .filter(e -> e.getName().startsWith("me/liuyingowo/oldcombat/nms/adapter/NmsBridge"))
+                        .filter(e -> e.getName().endsWith(".class"))
+                        .forEach(e -> {
+                            try (InputStream in = jar.getInputStream(e)) {
+                                String binName = e.getName()
+                                        .replace('/', '.')
+                                        .replaceAll("\\.class$", "");
+
+                                logger.info("Find Bridge Class: " + binName);
+                                map.put(binName, in.readAllBytes());
+                            } catch (IOException ex) {
+                                throw new UncheckedIOException(ex);
+                            }
+                        });
+            }
+            return map;
+
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
     }
 }

@@ -1,10 +1,16 @@
 package me.liuyingowo.oldcombat;
 
+import me.liuyingowo.oldcombat.loader.Agent;
+import me.liuyingowo.oldcombat.loader.NmsBridgeInjector;
 import me.liuyingowo.oldcombat.loader.PatchInstaller;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.lang.instrument.Instrumentation;
+
 public final class CuteOldCombat extends JavaPlugin {
+
+    private Instrumentation instrumentation;
 
     private ReloadCommand oldCombatCommand;
     private AttributeModifier attributeModifier;
@@ -17,7 +23,11 @@ public final class CuteOldCombat extends JavaPlugin {
         getConfig().options().copyDefaults(true);
         saveConfig();
 
-        PatchInstaller.install(getLogger(), getConfig());
+        this.instrumentation = Agent.getInstrumentation();
+        PatchInstaller.install(instrumentation, getLogger(), getConfig());
+
+        NmsBridgeInjector.injectIfNeeded(instrumentation, getLogger());
+        NmsBridgeInjector.sync(getConfig(), getLogger());
     }
 
     @Override
@@ -37,7 +47,7 @@ public final class CuteOldCombat extends JavaPlugin {
     public void onDisable() {
         HandlerList.unregisterAll(this);
 
-        PatchInstaller.uninstall(getLogger());
+        PatchInstaller.uninstall(instrumentation, getLogger());
 
         if (attributeModifier != null) {
             attributeModifier.restoreAllAttributesForAllPlayer();
@@ -47,6 +57,7 @@ public final class CuteOldCombat extends JavaPlugin {
         }
         legacyCombatListener = null;
         attributeModifier = null;
+        instrumentation = null;
     }
 
     public void reload() {
@@ -57,10 +68,10 @@ public final class CuteOldCombat extends JavaPlugin {
         getConfig().options().copyDefaults(true);
         saveConfig();
 
-        PatchInstaller.uninstall(getLogger());
+        PatchInstaller.uninstall(instrumentation, getLogger());
 
         if (getConfig().getBoolean("enable")) {
-            PatchInstaller.install(getLogger(), getConfig());
+            PatchInstaller.install(instrumentation, getLogger(), getConfig());
             attributeModifier = new AttributeModifier(this);
             legacyCombatListener = new LegacyCombatListener(this, attributeModifier);
             attributeModifier.initializeAttributes();

@@ -4,6 +4,11 @@ reach:
   enabled: true
   range: 4.5
 
+legacy_combat:
+  enable: true
+  attack-speed: 100
+  force-legacy: false
+
 knockback:
   enabled: false
   horizontal: 1.0
