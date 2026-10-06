@@ -22,12 +22,8 @@ public final class LegacyAttackAdvice {
                         builder
                                 .visit(Advice.to(SweepSubAdvice.class)
                                         .on(ElementMatchers.named("isSweepAttack")
-                                                .and(
-                                                        ElementMatchers.takesArguments(
-                                                                double.class,
-                                                                double.class,
-                                                                double.class)
-                                                )))
+                                                .and(ElementMatchers.takesArgument(2, boolean.class)))
+                                )
                                 .visit(Advice.to(CriticalSubAdvice.class)
                                         .on(ElementMatchers.named("canCriticalAttack")
                                                 .and(ElementMatchers.isPrivate())
