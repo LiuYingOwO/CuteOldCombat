@@ -1,7 +1,7 @@
 package me.liuyingowo.oldcombat.loader;
 
-import me.liuyingowo.oldcombat.nms.adapter.NmsAdapter;
 import me.liuyingowo.oldcombat.nms.NmsManager;
+import me.liuyingowo.oldcombat.nms.adapter.NmsAdapter;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.agent.builder.ResettableClassFileTransformer;
 import net.bytebuddy.description.type.TypeDescription;

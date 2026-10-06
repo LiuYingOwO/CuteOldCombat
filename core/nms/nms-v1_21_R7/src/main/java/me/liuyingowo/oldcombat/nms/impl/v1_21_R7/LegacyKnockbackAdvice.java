@@ -26,9 +26,14 @@ public final class LegacyKnockbackAdvice {
                     .transform((builder, typeDescription, classLoader, javaModule, protectionDomain) ->
                             builder.visit(Advice.to(LegacyKnockbackAdvice.class)
                                     .on(ElementMatchers.named("knockback")
-                                            .and(ElementMatchers.takesArgument(0, double.class))
-                                            .and(ElementMatchers.takesArgument(1, double.class))
-                                            .and(ElementMatchers.takesArgument(2, double.class)))));
+                                            .and(ElementMatchers.takesArguments(
+                                                    double.class,
+                                                    double.class,
+                                                    double.class,
+                                                    Entity.class,
+                                                    EntityKnockbackEvent.Cause.class
+                                            ))
+                                    )));
         };
     }
 

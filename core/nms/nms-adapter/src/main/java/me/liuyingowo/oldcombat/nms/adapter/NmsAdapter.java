@@ -1,7 +1,7 @@
 package me.liuyingowo.oldcombat.nms.adapter;
 
-import org.bukkit.entity.Player;
 import net.bytebuddy.agent.builder.AgentBuilder;
+import org.bukkit.entity.Player;
 
 public interface NmsAdapter {
 
