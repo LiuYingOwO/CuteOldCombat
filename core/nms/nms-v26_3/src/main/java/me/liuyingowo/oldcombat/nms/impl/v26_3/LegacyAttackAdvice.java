@@ -17,9 +17,14 @@ public class LegacyAttackAdvice {
                 .type(ElementMatchers.named(net.minecraft.world.entity.player.Player.class.getName()))
                 .transform((builder, typeDescription, classLoader, javaModule, protectionDomain) ->
                         builder
-                                .visit(Advice.to(AttackSubAdvice.class)
-                                        .on(ElementMatchers.named("attack")
-                                                .and(ElementMatchers.takesArguments(Entity.class)))
+                                .visit(Advice.to(SweepSubAdvice.class)
+                                        .on(ElementMatchers.named("isSweepAttack")
+                                                .and(ElementMatchers.takesArguments(
+                                                        boolean.class,
+                                                        boolean.class,
+                                                        boolean.class
+                                                ))
+                                        )
                                 )
                                 .visit(Advice.to(CriticalSubAdvice.class)
                                         .on(ElementMatchers.named("canCriticalAttack")
@@ -29,10 +34,10 @@ public class LegacyAttackAdvice {
                 );
     }
 
-    public static class AttackSubAdvice {
-        @Advice.OnMethodEnter
-        public static void onEnter(@Advice.This Player attacker) {
-            attacker.resetAttackStrengthTicker();
+    public static class SweepSubAdvice {
+        @Advice.OnMethodExit
+        public static void onExit(@Advice.Return(readOnly = false) boolean returnValue) {
+            returnValue = false;
         }
     }
 

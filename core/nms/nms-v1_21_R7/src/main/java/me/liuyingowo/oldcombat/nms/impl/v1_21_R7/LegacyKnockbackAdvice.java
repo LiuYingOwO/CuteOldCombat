@@ -33,7 +33,7 @@ public final class LegacyKnockbackAdvice {
     }
 
     @Advice.OnMethodEnter(skipOn = Advice.OnNonDefaultValue.class)
-    public static boolean onEnter1(@Advice.This LivingEntity entity,
+    public static boolean onEnter(@Advice.This LivingEntity entity,
                                    @Advice.Argument(0) double strength,
                                    @Advice.Argument(1) double x,
                                    @Advice.Argument(2) double z,

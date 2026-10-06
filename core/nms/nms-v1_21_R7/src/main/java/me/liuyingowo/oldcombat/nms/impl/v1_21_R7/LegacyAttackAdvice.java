@@ -7,6 +7,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
+/**
+ * 负责1.8的暴击判定/取消挥砍伤害
+ */
 public final class LegacyAttackAdvice {
 
     private LegacyAttackAdvice() {
@@ -17,20 +20,18 @@ public final class LegacyAttackAdvice {
                 .type(ElementMatchers.named(Player.class.getName()))
                 .transform((builder, typeDescription, classLoader, javaModule, protectionDomain) ->
                         builder
-                                .visit(Advice.to(AttackSubAdvice.class)
-                                        .on(ElementMatchers.named("attack")
-                                                .and(ElementMatchers.takesArguments(Entity.class))))
+                                .visit(Advice.to(SweepSubAdvice.class)
+                                        .on(ElementMatchers.named("isSweepAttack")
+                                                .and(
+                                                        ElementMatchers.takesArguments(
+                                                                double.class,
+                                                                double.class,
+                                                                double.class)
+                                                )))
                                 .visit(Advice.to(CriticalSubAdvice.class)
                                         .on(ElementMatchers.named("canCriticalAttack")
                                                 .and(ElementMatchers.isPrivate())
                                                 .and(ElementMatchers.takesArguments(Entity.class)))));
-    }
-
-    public static class AttackSubAdvice {
-        @Advice.OnMethodEnter
-        public static void onEnter(@Advice.This Player attacker) {
-            attacker.resetAttackStrengthTicker();
-        }
     }
 
     public static class CriticalSubAdvice {
@@ -49,6 +50,13 @@ public final class LegacyAttackAdvice {
                     returnValue = true;
                 }
             }
+        }
+    }
+
+    public static class SweepSubAdvice {
+        @Advice.OnMethodExit
+        public static void onExit(@Advice.Return(readOnly = false) boolean returnValue) {
+            returnValue = false;
         }
     }
 }

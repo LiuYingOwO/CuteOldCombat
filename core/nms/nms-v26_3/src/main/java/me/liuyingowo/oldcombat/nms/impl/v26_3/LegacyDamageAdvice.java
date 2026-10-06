@@ -18,11 +18,6 @@ public class LegacyDamageAdvice {
                                         .and(ElementMatchers.takesArguments(float.class)))));
     }
 
-    @Advice.OnMethodEnter
-    public static void onEnter(@Advice.This Player player) {
-        player.resetAttackStrengthTicker();
-    }
-
     @Advice.OnMethodExit
     public static void onExit(@Advice.Return(readOnly = false) float returnValue) {
         returnValue = 1.0F;

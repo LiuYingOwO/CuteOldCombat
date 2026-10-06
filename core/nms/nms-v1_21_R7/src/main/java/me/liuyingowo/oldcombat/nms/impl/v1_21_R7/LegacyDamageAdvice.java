@@ -19,11 +19,11 @@ public final class LegacyDamageAdvice {
                                         .and(ElementMatchers.takesArguments(float.class)))));
     }
 
-    @Advice.OnMethodEnter
-    public static void onEnter(@Advice.This Player player) {
-        player.resetAttackStrengthTicker();
-    }
-
+    /**
+     * 如果在 onEnter 调用 resetAttackStrengthTicker(), 会导致:
+     * 6 处误重置 + PlayerAttackEntityCooldownResetEvent.
+     * 故弃用.
+     */
     @Advice.OnMethodExit
     public static void onExit(@Advice.Return(readOnly = false) float returnValue) {
         returnValue = 1.0F;
