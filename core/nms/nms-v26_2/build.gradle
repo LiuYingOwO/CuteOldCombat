@@ -6,9 +6,6 @@ dependencies {
     compileOnly project(":core:nms:nms-adapter")
 
     paperweight.paperDevBundle("26.2.build+")
-
-    compileOnly("net.bytebuddy:byte-buddy:1.14.18")
-    compileOnly("net.bytebuddy:byte-buddy-agent:1.14.18")
 }
 
 tasks.named("reobfJar") {

@@ -6,9 +6,6 @@ dependencies {
     compileOnly project(':core:nms:nms-adapter')
 
     paperweightDevelopmentBundle 'io.papermc.paper:dev-bundle:1.20.6-R0.1-SNAPSHOT'
-
-    compileOnly("net.bytebuddy:byte-buddy:1.14.18")
-    compileOnly("net.bytebuddy:byte-buddy-agent:1.14.18")
 }
 
 java {
