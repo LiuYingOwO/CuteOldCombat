@@ -32,6 +32,7 @@ public final class CuteOldCombat extends JavaPlugin {
 
         BridgeSync.syncKnockback(this);
         BridgeSync.syncLegacyCombat(this);
+        BridgeSync.syncSound(this);
     }
 
     @Override
@@ -76,6 +77,7 @@ public final class CuteOldCombat extends JavaPlugin {
 
         BridgeSync.syncKnockback(this);
         BridgeSync.syncLegacyCombat(this);
+        BridgeSync.syncSound(this);
 
         if (getConfig().getBoolean("enable")) {
             if (!PatchInstaller.hasTransformer()) {

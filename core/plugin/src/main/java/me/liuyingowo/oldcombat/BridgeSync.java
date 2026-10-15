@@ -2,6 +2,7 @@ package me.liuyingowo.oldcombat;
 
 import me.liuyingowo.oldcombat.nms.bridge.KnockbackBridge;
 import me.liuyingowo.oldcombat.nms.bridge.LegacyCombatBridge;
+import me.liuyingowo.oldcombat.nms.bridge.SoundBridge;
 import org.bukkit.plugin.Plugin;
 
 public class BridgeSync {
@@ -26,7 +27,7 @@ public class BridgeSync {
         KnockbackBridge.setMinDirectionLength(minDirectionLength);
         KnockbackBridge.setApplyResistance(applyResistance);
 
-        logger.info("Knockback bridge updated: enabled=" + enabled
+        logger.info("Knockback updated: enabled=" + enabled
                 + ", horizontal=" + horizontal
                 + ", vertical=" + vertical
                 + ", verticalLimit=" + verticalLimit
@@ -37,7 +38,6 @@ public class BridgeSync {
 
     public static void syncLegacyCombat(Plugin plugin) {
         var config = plugin.getConfig();
-        var logger = plugin.getLogger();
 
         boolean enabled = config.getBoolean("legacy_combat.enabled");
         boolean disable_sweep_attack = config.getBoolean("legacy_combat.disable-sweep-attack");
@@ -48,12 +48,18 @@ public class BridgeSync {
         LegacyCombatBridge.setDisableSweepAttack(disable_sweep_attack);
         LegacyCombatBridge.setLegacyDamage(legacy_damage);
         LegacyCombatBridge.setCriticalWhileSprinting(critical_while_sprinting);
+    }
 
-        logger.info("LegacyCombat bridge updated: enabled=" + enabled
-                + ", disable-sweep-attack=" + disable_sweep_attack
-                + ", enable-legacy-damage=" + legacy_damage
-                + ", critical-while-sprinting=" + critical_while_sprinting
-        );
+    public static void syncSound(Plugin plugin) {
+        var config = plugin.getConfig();
+
+        boolean disable_sweep = config.getBoolean("sounds.disable-sweep");
+        boolean disable_attack = config.getBoolean("sounds.disable-attack");
+        boolean disable_knockback = config.getBoolean("sounds.disable-knockback");
+
+        SoundBridge.setDisableSweep(disable_sweep);
+        SoundBridge.setDisableAttack(disable_attack);
+        SoundBridge.setDisableKnockback(disable_knockback);
     }
 
 }

@@ -8,6 +8,11 @@ legacy_combat:
   enable-legacy-damage: true
   critical-while-sprinting: true
 
+sounds:
+  disable-sweep: true
+  disable-attack: true
+  disable-knockback: true
+
 knockback:
   enabled: false
   horizontal: 1.0
