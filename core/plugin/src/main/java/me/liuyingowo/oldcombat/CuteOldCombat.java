@@ -74,6 +74,9 @@ public final class CuteOldCombat extends JavaPlugin {
         getConfig().options().copyDefaults(true);
         saveConfig();
 
+        BridgeSync.syncKnockback(this);
+        BridgeSync.syncLegacyCombat(this);
+
         PatchInstaller.uninstall(instrumentation, getLogger());
 
         if (getConfig().getBoolean("enable")) {

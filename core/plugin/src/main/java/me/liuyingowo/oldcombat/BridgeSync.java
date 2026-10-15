@@ -40,16 +40,19 @@ public class BridgeSync {
         var logger = plugin.getLogger();
 
         boolean enabled = config.getBoolean("legacy_combat.enabled");
-        double attack_speed = config.getDouble("legacy_combat.attack-speed");
-        boolean force_legacy = config.getBoolean("legacy_combat.force-legacy");
+        boolean disable_sweep_attack = config.getBoolean("legacy_combat.disable-sweep-attack");
+        boolean legacy_damage = config.getBoolean("legacy_combat.enable-legacy-damage");
+        boolean critical_while_sprinting = config.getBoolean("legacy_combat.critical-while-sprinting");
 
         LegacyCombatBridge.setEnabled(enabled);
-        LegacyCombatBridge.setAttackSpeed(attack_speed);
-        LegacyCombatBridge.setForceLegacy(force_legacy);
+        LegacyCombatBridge.setDisableSweepAttack(disable_sweep_attack);
+        LegacyCombatBridge.setLegacyDamage(legacy_damage);
+        LegacyCombatBridge.setCriticalWhileSprinting(critical_while_sprinting);
 
         logger.info("LegacyCombat bridge updated: enabled=" + enabled
-                + ", attack_speed=" + attack_speed
-                + ", force_legacy=" + force_legacy
+                + ", disable-sweep-attack=" + disable_sweep_attack
+                + ", enable-legacy-damage=" + legacy_damage
+                + ", critical-while-sprinting=" + critical_while_sprinting
         );
     }
 

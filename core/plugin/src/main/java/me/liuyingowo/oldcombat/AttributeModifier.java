@@ -32,8 +32,8 @@ public class AttributeModifier {
         }
         var adapter = NmsManager.getAdapter();
 
-        if (plugin.getConfig().getBoolean("reach.enabled")) {
-            adapter.applyLegacyEntityInteractionRange(player, plugin.getConfig().getDouble("reach.range"));
+        if (plugin.getConfig().getBoolean("legacy_combat.enabled")) {
+            adapter.applyLegacyEntityInteractionRange(player, plugin.getConfig().getDouble("legacy_combat.reach-range"));
         }
         adapter.applyLegacyAttackSpeed(player);
     }
