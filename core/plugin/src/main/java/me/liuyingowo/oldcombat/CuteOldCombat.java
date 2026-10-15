@@ -4,8 +4,6 @@ import me.liuyingowo.oldcombat.command.ReloadCommand;
 import me.liuyingowo.oldcombat.loader.Agent;
 import me.liuyingowo.oldcombat.loader.NmsBridgeInjector;
 import me.liuyingowo.oldcombat.loader.PatchInstaller;
-import me.liuyingowo.oldcombat.nms.bridge.KnockbackBridge;
-import me.liuyingowo.oldcombat.nms.bridge.LegacyCombatBridge;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -32,8 +30,8 @@ public final class CuteOldCombat extends JavaPlugin {
         NmsBridgeInjector.injectIfNeeded(instrumentation, getLogger());
         PatchInstaller.install(instrumentation, getLogger(), getConfig());
 
-        KnockbackBridge.sync(getConfig(), getLogger());
-        LegacyCombatBridge.sync(getConfig(), getLogger());
+        BridgeSync.syncKnockback(this);
+        BridgeSync.syncLegacyCombat(this);
     }
 
     @Override

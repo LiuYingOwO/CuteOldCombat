@@ -1,9 +1,6 @@
 package me.liuyingowo.oldcombat.nms.bridge;
 
-import org.bukkit.configuration.file.FileConfiguration;
-
 import java.lang.reflect.Field;
-import java.util.logging.Logger;
 
 /**
  * Loaded into bootstrap by {@code NmsBridgeInstaller}.
@@ -94,31 +91,5 @@ public final class KnockbackBridge {
             Field field = knockbackBridgeClass.getDeclaredField("applyResistance");
             field.set(null, applyResistance);
         } catch (ReflectiveOperationException ignored) {}
-    }
-
-    public static void sync(FileConfiguration config, Logger logger) {
-        boolean enabled = config.getBoolean("knockback.enabled");
-        double horizontal = config.getDouble("knockback.horizontal");
-        double vertical = config.getDouble("knockback.vertical");
-        double verticalLimit = config.getDouble("knockback.vertical-limit");
-        double friction = config.getDouble("knockback.friction");
-        double minDirectionLength = config.getDouble("knockback.min-direction-length");
-        boolean applyResistance = config.getBoolean("knockback.apply-resistance");
-
-        setEnabled(enabled);
-        setHorizontal(horizontal);
-        setVertical(vertical);
-        setVerticalLimit(verticalLimit);
-        setFriction(friction);
-        setMinDirectionLength(minDirectionLength);
-        setApplyResistance(applyResistance);
-
-        logger.info("Knockback bridge updated: enabled=" + enabled
-                + ", horizontal=" + horizontal
-                + ", vertical=" + vertical
-                + ", verticalLimit=" + verticalLimit
-                + ", friction=" + friction
-                + ", minDirectionLength=" + minDirectionLength
-                + ", applyResistance=" + applyResistance);
     }
 }

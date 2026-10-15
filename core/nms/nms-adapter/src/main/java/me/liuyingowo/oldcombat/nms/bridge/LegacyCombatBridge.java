@@ -1,9 +1,6 @@
 package me.liuyingowo.oldcombat.nms.bridge;
 
-import org.bukkit.configuration.file.FileConfiguration;
-
 import java.lang.reflect.Field;
-import java.util.logging.Logger;
 
 public class LegacyCombatBridge {
 
@@ -51,20 +48,5 @@ public class LegacyCombatBridge {
             Field field = legacyCombatBridgeClass.getDeclaredField("force_legacy");
             field.set(null, legacy);
         } catch (ReflectiveOperationException ignored) {}
-    }
-
-    public static void sync(FileConfiguration config, Logger logger) {
-        boolean enabled = config.getBoolean("legacy_combat.enabled");
-        double attack_speed = config.getDouble("legacy_combat.attack-speed");
-        boolean force_legacy = config.getBoolean("legacy_combat.force-legacy");
-
-        setEnabled(enabled);
-        setAttackSpeed(attack_speed);
-        setForceLegacy(force_legacy);
-
-        logger.info("LegacyCombat bridge updated: enabled=" + enabled
-                + ", attack_speed=" + attack_speed
-                + ", force_legacy=" + force_legacy
-        );
     }
 }
