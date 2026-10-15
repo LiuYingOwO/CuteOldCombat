@@ -14,23 +14,15 @@ public class AttributeModifier {
 
     public void initializeAttributes() {
         if (plugin.getConfig().getBoolean("enable")) {
-            applyAllAttributesForAllPlayer();
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                player.getScheduler().run(plugin, scheduledTask -> applyAttributes(player), null);
+            }
             plugin.getLogger().info("Legacy Attack Attributes applied!");
         } else {
-            restoreAllAttributesForAllPlayer();
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                player.getScheduler().run(plugin, scheduledTask -> restoreAttributes(player), null);
+            }
             plugin.getLogger().warning("CuteOldCombat is disabled via config; combat attributes have been restored.");
-        }
-    }
-
-    public void applyAllAttributesForAllPlayer() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            applyAttributes(player);
-        }
-    }
-
-    public void restoreAllAttributesForAllPlayer() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            restoreAttributes(player);
         }
     }
 
@@ -40,12 +32,10 @@ public class AttributeModifier {
         }
         var adapter = NmsManager.getAdapter();
 
-        player.getScheduler().run(plugin, (scheduledTask -> {
-            if (plugin.getConfig().getBoolean("reach.enabled")) {
-                adapter.applyLegacyEntityInteractionRange(player, plugin.getConfig().getDouble("reach.range"));
-            }
-            adapter.applyLegacyAttackSpeed(player);
-        }), null);
+        if (plugin.getConfig().getBoolean("reach.enabled")) {
+            adapter.applyLegacyEntityInteractionRange(player, plugin.getConfig().getDouble("reach.range"));
+        }
+        adapter.applyLegacyAttackSpeed(player);
     }
 
     public void restoreAttributes(Player player) {
@@ -54,9 +44,7 @@ public class AttributeModifier {
         }
         var adapter = NmsManager.getAdapter();
 
-        player.getScheduler().run(plugin, (scheduledTask -> {
-            adapter.restoreLegacyEntityInteractionRange(player);
-            adapter.restoreLegacyAttackSpeed(player);
-        }), null);
+        adapter.restoreLegacyEntityInteractionRange(player);
+        adapter.restoreLegacyAttackSpeed(player);
     }
 }

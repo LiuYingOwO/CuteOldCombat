@@ -23,7 +23,6 @@ public final class LegacyCombatListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event) {
         var player = event.getPlayer();
-        attributeModifier.applyAttributes(player);
         player.getScheduler().runDelayed(plugin, scheduledTask -> attributeModifier.applyAttributes(player), null, 1L);
     }
 
@@ -36,7 +35,6 @@ public final class LegacyCombatListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
         var player = event.getPlayer();
-        attributeModifier.applyAttributes(event.getPlayer());
         player.getScheduler().runDelayed(plugin, scheduledTask -> attributeModifier.applyAttributes(player), null, 1L);
     }
 
