@@ -20,8 +20,6 @@ public final class NmsAdapterImpl implements NmsAdapter {
     private static final UUID ATTACK_SPEED_ID = UUID.nameUUIDFromBytes(ATTACK_SPEED_NAME.getBytes());
     private static final UUID INTERACTION_RANGE_ID = UUID.nameUUIDFromBytes(INTERACTION_RANGE_NAME.getBytes());
 
-    private static final double LEGACY_ATTACK_SPEED = 100.0D;
-
     private static final List<AgentPatch> PATCHES = List.of(
             LegacyKnockbackAdvice.patch(),
             LegacyDamageAdvice.patch(),
@@ -35,8 +33,8 @@ public final class NmsAdapterImpl implements NmsAdapter {
     }
 
     @Override
-    public void applyLegacyAttackSpeed(org.bukkit.entity.Player player) {
-        applyAttribute(player, Attribute.GENERIC_ATTACK_SPEED, ATTACK_SPEED_ID, ATTACK_SPEED_NAME, LEGACY_ATTACK_SPEED);
+    public void applyLegacyAttackSpeed(org.bukkit.entity.Player player, double speed) {
+        applyAttribute(player, Attribute.GENERIC_ATTACK_SPEED, ATTACK_SPEED_ID, ATTACK_SPEED_NAME, speed);
     }
 
     @Override

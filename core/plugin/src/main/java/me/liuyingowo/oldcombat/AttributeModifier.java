@@ -35,7 +35,7 @@ public class AttributeModifier {
         if (plugin.getConfig().getBoolean("legacy_combat.enabled")) {
             adapter.applyLegacyEntityInteractionRange(player, plugin.getConfig().getDouble("legacy_combat.reach-range"));
         }
-        adapter.applyLegacyAttackSpeed(player);
+        adapter.applyLegacyAttackSpeed(player, plugin.getConfig().getDouble("legacy_combat.attack-cooldown"));
     }
 
     public void restoreAttributes(Player player) {

@@ -7,7 +7,7 @@ public interface NmsAdapter {
 
     AgentBuilder apply(AgentBuilder agentBuilder, java.util.logging.Logger logger);
 
-    void applyLegacyAttackSpeed(Player player);
+    void applyLegacyAttackSpeed(Player player, double speed);
 
     void restoreLegacyAttackSpeed(Player player);
 

@@ -17,8 +17,6 @@ public final class NmsAdapterImpl implements NmsAdapter {
     private static final NamespacedKey ATTACK_KEY = new NamespacedKey("cuteoldcombat", "attack_speed");
     private static final NamespacedKey INTERACTION_KEY = new NamespacedKey("cuteoldcombat", "interaction_range");
 
-    private static final double DEFAULT_ATTACK_SPEED = 100.0D;
-
     private static final List<AgentPatch> PATCHES = List.of(
             LegacyKnockbackAdvice.patch(),
             LegacyDamageAdvice.patch(),
@@ -32,8 +30,8 @@ public final class NmsAdapterImpl implements NmsAdapter {
     }
 
     @Override
-    public void applyLegacyAttackSpeed(org.bukkit.entity.Player player) {
-        applyAttribute(player, Attribute.ATTACK_SPEED, ATTACK_KEY, DEFAULT_ATTACK_SPEED);
+    public void applyLegacyAttackSpeed(org.bukkit.entity.Player player, double speed) {
+        applyAttribute(player, Attribute.ATTACK_SPEED, ATTACK_KEY, speed);
     }
 
     @Override
