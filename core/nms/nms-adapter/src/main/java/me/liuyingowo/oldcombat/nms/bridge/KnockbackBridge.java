@@ -6,7 +6,7 @@ import java.lang.reflect.Field;
 import java.util.logging.Logger;
 
 /**
- * Loaded into bootstrap by {@code KnockbackBridgeInstaller}.
+ * Loaded into bootstrap by {@code NmsBridgeInstaller}.
  *
  * <p>NMS classes cannot see the Bukkit plugin classloader, so injected advice
  * must only touch classes that are visible from the NMS side. Keep this class

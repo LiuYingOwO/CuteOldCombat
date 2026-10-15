@@ -5,7 +5,7 @@ reach:
   range: 4.5
 
 legacy_combat:
-  enable: true
+  enabled: true
   attack-speed: 100
   force-legacy: false
 

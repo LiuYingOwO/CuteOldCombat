@@ -42,14 +42,14 @@ public class LegacyCombatBridge {
     public static void setAttackSpeed(double speed) {
         try {
             Field field = legacyCombatBridgeClass.getDeclaredField("attack_speed");
-            field.set(null, enabled);
+            field.set(null, speed);
         } catch (ReflectiveOperationException ignored) {}
     }
 
     public static void setForceLegacy(boolean legacy) {
         try {
             Field field = legacyCombatBridgeClass.getDeclaredField("force_legacy");
-            field.set(null, enabled);
+            field.set(null, legacy);
         } catch (ReflectiveOperationException ignored) {}
     }
 
