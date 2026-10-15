@@ -66,11 +66,11 @@ public final class NmsAdapterImpl implements NmsAdapter {
         for (AttributeModifier modifier : instance.getModifiers()) {
             if (id.equals(modifier.getUniqueId())) {
                 instance.removeModifier(modifier);
-                return;
+                break;
             }
         }
 
-        double delta = desired - instance.getDefaultValue();
+        double delta = desired - instance.getValue();
         if (delta == 0.0D) {
             return;
         }

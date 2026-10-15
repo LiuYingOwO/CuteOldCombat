@@ -63,15 +63,13 @@ public final class NmsAdapterImpl implements NmsAdapter {
         for (AttributeModifier modifier : instance.getModifiers()) {
             if (modifier.getKey().equals(key)) {
                 instance.removeModifier(modifier);
-                return;
+                break;
             }
         }
-
-        double delta = desired - instance.getAttribute().getDefaultValue();
+        double delta = desired - instance.getValue();
         if (delta == 0.0D) {
             return;
         }
-
         instance.addTransientModifier(new AttributeModifier(key, delta, AttributeModifier.Operation.ADD_NUMBER));
     }
 
