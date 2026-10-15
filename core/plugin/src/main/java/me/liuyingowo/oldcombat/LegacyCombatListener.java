@@ -10,13 +10,6 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
-/**
- * 还原 1.8 战斗体验的监听器。
- * <p>监听器的注册与否严格跟随 {@code enable} 配置：
- * 仅在 {@code enable=true} 时由插件注册；因此监听器生命周期由插件
- * {@code registerEvents / unregisterAll} 控制，事件处理内不再自行判断开关。
- * </p>
- */
 public final class LegacyCombatListener implements Listener {
 
     private final CuteOldCombat plugin;

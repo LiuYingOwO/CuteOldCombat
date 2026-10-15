@@ -2,7 +2,7 @@ package me.liuyingowo.oldcombat.nms.impl.v26_2;
 
 import io.papermc.paper.event.entity.EntityKnockbackEvent;
 import me.liuyingowo.oldcombat.nms.adapter.AgentPatch;
-import me.liuyingowo.oldcombat.nms.adapter.KnockbackBridge;
+import me.liuyingowo.oldcombat.nms.bridge.KnockbackBridge;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.minecraft.world.damagesource.DamageSource;
