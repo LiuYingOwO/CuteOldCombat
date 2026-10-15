@@ -1,6 +1,7 @@
 package me.liuyingowo.oldcombat.nms.impl.v26_2;
 
 import me.liuyingowo.oldcombat.nms.adapter.AgentPatch;
+import me.liuyingowo.oldcombat.nms.bridge.LegacyCombatBridge;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.minecraft.world.entity.Entity;
@@ -39,16 +40,17 @@ public class LegacyAttackAdvice {
         public static void onExit(@Advice.This Player attacker,
                                   @Advice.Argument(0) Entity target,
                                   @Advice.Return(readOnly = false) boolean returnValue) {
-            if (!returnValue) {
-                if (attacker.fallDistance > 0.0f
-                        && !attacker.onGround()
-                        && !attacker.onClimbable()
-                        && !attacker.isInWater()
-                        && !attacker.isMobilityRestricted()
-                        && !attacker.isPassenger()
-                        && target instanceof LivingEntity) {
-                    returnValue = true;
-                }
+            if (returnValue || !LegacyCombatBridge.enabled || !LegacyCombatBridge.critical_while_sprinting) {
+                return;
+            }
+            if (attacker.fallDistance > 0.0f
+                    && !attacker.onGround()
+                    && !attacker.onClimbable()
+                    && !attacker.isInWater()
+                    && !attacker.isMobilityRestricted()
+                    && !attacker.isPassenger()
+                    && target instanceof LivingEntity) {
+                returnValue = true;
             }
         }
     }
@@ -56,6 +58,7 @@ public class LegacyAttackAdvice {
     public static class SweepSubAdvice {
         @Advice.OnMethodExit
         public static void onExit(@Advice.Return(readOnly = false) boolean returnValue) {
+            if (!LegacyCombatBridge.enabled || !LegacyCombatBridge.disable_sweep_attack) return;
             returnValue = false;
         }
     }

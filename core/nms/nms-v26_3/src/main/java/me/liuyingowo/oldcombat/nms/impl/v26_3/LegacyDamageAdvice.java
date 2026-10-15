@@ -1,6 +1,7 @@
 package me.liuyingowo.oldcombat.nms.impl.v26_3;
 
 import me.liuyingowo.oldcombat.nms.adapter.AgentPatch;
+import me.liuyingowo.oldcombat.nms.bridge.LegacyCombatBridge;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.minecraft.world.entity.player.Player;
@@ -20,6 +21,7 @@ public class LegacyDamageAdvice {
 
     @Advice.OnMethodExit
     public static void onExit(@Advice.Return(readOnly = false) float returnValue) {
+        if (!LegacyCombatBridge.enabled || !LegacyCombatBridge.enable_legacy_damage) return;
         returnValue = 1.0F;
     }
 }

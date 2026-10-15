@@ -1,6 +1,7 @@
 package me.liuyingowo.oldcombat.nms.impl.v1_21_R7;
 
 import me.liuyingowo.oldcombat.nms.adapter.AgentPatch;
+import me.liuyingowo.oldcombat.nms.bridge.SoundBridge;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.minecraft.sounds.SoundEvent;
@@ -33,6 +34,18 @@ public final class LegacySoundEffectAdvice {
 
     @Advice.OnMethodEnter(skipOn = Advice.OnNonDefaultValue.class)
     public static boolean onEnter(@Advice.Argument(4) SoundEvent soundEvent) {
-        return soundEvent == SoundEvents.PLAYER_ATTACK_SWEEP;
+        if (SoundBridge.disable_attack
+                && (soundEvent == SoundEvents.PLAYER_ATTACK_STRONG
+                || soundEvent == SoundEvents.PLAYER_ATTACK_WEAK
+                || soundEvent == SoundEvents.PLAYER_ATTACK_CRIT)) {
+            return true;
+        }
+        if (SoundBridge.disable_knockback && soundEvent == SoundEvents.PLAYER_ATTACK_KNOCKBACK) {
+            return true;
+        }
+        if (SoundBridge.disable_sweep && soundEvent == SoundEvents.PLAYER_ATTACK_SWEEP) {
+            return true;
+        }
+        return false;
     }
 }

@@ -3,6 +3,7 @@ package me.liuyingowo.oldcombat.nms.impl.v1_20_R4;
 import io.papermc.paper.event.entity.EntityKnockbackEvent;
 import io.papermc.paper.event.player.PrePlayerAttackEntityEvent;
 import me.liuyingowo.oldcombat.nms.adapter.AgentPatch;
+import me.liuyingowo.oldcombat.nms.bridge.LegacyCombatBridge;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.minecraft.core.particles.ParticleTypes;
@@ -62,7 +63,7 @@ public final class LegacyAttackAdvice {
     public static class SweepSubAdvice {
         @Advice.OnMethodEnter(skipOn = Advice.OnNonDefaultValue.class)
         public static boolean onEnter() {
-            return true;
+            return LegacyCombatBridge.enabled && LegacyCombatBridge.disable_sweep_attack;
         }
     }
 
@@ -115,14 +116,27 @@ public final class LegacyAttackAdvice {
             f += self.getItemInHand(InteractionHand.MAIN_HAND).getItem().getAttackDamageBonus(self, f);
 
             // important: here hook 1.8's Critical Attack, allow critical while sprinting.
-            boolean flag2 = flag
-                    && self.fallDistance > 0.0f
-                    && !self.onGround()
-                    && !self.onClimbable()
-                    && !self.isInWater()
-                    && !self.hasEffect(MobEffects.BLINDNESS)
-                    && !self.isPassenger()
-                    && target instanceof LivingEntity;
+            boolean flag2;
+            if (!LegacyCombatBridge.enabled || !LegacyCombatBridge.critical_while_sprinting) {
+                flag2 = flag
+                        && self.fallDistance > 0.0f
+                        && !self.onGround()
+                        && !self.onClimbable()
+                        && !self.isInWater()
+                        && !self.hasEffect(MobEffects.BLINDNESS)
+                        && !self.isPassenger()
+                        && target instanceof LivingEntity;
+            } else {
+                flag2 = flag && self.fallDistance > 0.0F
+                        && !self.onGround()
+                        && !self.onClimbable()
+                        && !self.isInWater()
+                        && !self.hasEffect(MobEffects.BLINDNESS)
+                        && !self.isPassenger()
+                        && target instanceof LivingEntity
+                        && !self.isSprinting();
+            }
+
             flag2 = flag2 && !self.level().paperConfig().entities.behavior.disablePlayerCrits;
             if (flag2) {
                 f *= 1.5f;
