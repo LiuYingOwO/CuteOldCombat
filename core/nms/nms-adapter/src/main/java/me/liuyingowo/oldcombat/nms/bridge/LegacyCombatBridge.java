@@ -5,8 +5,9 @@ import java.lang.reflect.Field;
 public class LegacyCombatBridge {
 
     public static volatile boolean enabled;
-    public static volatile double attack_speed;
-    public static volatile boolean force_legacy;
+    public static volatile boolean disable_sweep_attack;
+    public static volatile boolean enable_legacy_damage;
+    public static volatile boolean critical_while_sprinting;
 
     private LegacyCombatBridge() {}
 
@@ -25,8 +26,9 @@ public class LegacyCombatBridge {
         }
 
         enabled = true;
-        attack_speed = 100D;
-        force_legacy = false;
+        disable_sweep_attack = true;
+        enable_legacy_damage = true;
+        critical_while_sprinting = true;
     }
 
     public static void setEnabled(boolean enabled) {
@@ -36,17 +38,24 @@ public class LegacyCombatBridge {
         } catch (ReflectiveOperationException ignored) {}
     }
 
-    public static void setAttackSpeed(double speed) {
+    public static void setDisableSweepAttack(boolean disable) {
         try {
-            Field field = legacyCombatBridgeClass.getDeclaredField("attack_speed");
-            field.set(null, speed);
+            Field field = legacyCombatBridgeClass.getDeclaredField("disable_sweep_attack");
+            field.set(null, disable);
         } catch (ReflectiveOperationException ignored) {}
     }
 
-    public static void setForceLegacy(boolean legacy) {
+    public static void setLegacyDamage(boolean legacy_damage) {
         try {
-            Field field = legacyCombatBridgeClass.getDeclaredField("force_legacy");
-            field.set(null, legacy);
+            Field field = legacyCombatBridgeClass.getDeclaredField("enable_legacy_damage");
+            field.set(null, legacy_damage);
+        } catch (ReflectiveOperationException ignored) {}
+    }
+
+    public static void setCriticalWhileSprinting(boolean critical_while_sprinting) {
+        try {
+            Field field = legacyCombatBridgeClass.getDeclaredField("critical_while_sprinting");
+            field.set(null, critical_while_sprinting);
         } catch (ReflectiveOperationException ignored) {}
     }
 }
