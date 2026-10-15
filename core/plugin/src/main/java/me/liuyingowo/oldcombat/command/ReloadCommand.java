@@ -1,5 +1,6 @@
-package me.liuyingowo.oldcombat;
+package me.liuyingowo.oldcombat.command;
 
+import me.liuyingowo.oldcombat.CuteOldCombat;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginIdentifiableCommand;

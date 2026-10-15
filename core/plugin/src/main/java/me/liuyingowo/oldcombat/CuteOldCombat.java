@@ -1,5 +1,6 @@
 package me.liuyingowo.oldcombat;
 
+import me.liuyingowo.oldcombat.command.ReloadCommand;
 import me.liuyingowo.oldcombat.loader.Agent;
 import me.liuyingowo.oldcombat.loader.NmsBridgeInjector;
 import me.liuyingowo.oldcombat.loader.PatchInstaller;
