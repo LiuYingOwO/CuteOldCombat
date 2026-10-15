@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 
 public final class PatchInstaller {
 
-    private static ResettableClassFileTransformer transformer;
+    private static volatile ResettableClassFileTransformer transformer;
 
     private PatchInstaller() {}
 
@@ -85,11 +85,11 @@ public final class PatchInstaller {
     }
     
     private static void resetCurrentTransformer(Instrumentation instrumentation, Logger logger) {
-        if (transformer == null || instrumentation == null) {
-            return;
-        }
-
         try {
+            if (transformer == null || instrumentation == null) {
+                return;
+            }
+
             boolean reset = transformer.reset(instrumentation, AgentBuilder.RedefinitionStrategy.RETRANSFORMATION);
             if (reset) {
                 logger.info("Previous NMS patches reset.");
