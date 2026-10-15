@@ -3,16 +3,21 @@ package me.liuyingowo.oldcombat.nms.impl.v1_21_R7;
 import me.liuyingowo.oldcombat.nms.adapter.AgentPatch;
 import me.liuyingowo.oldcombat.nms.adapter.NmsAdapter;
 import net.bytebuddy.agent.builder.AgentBuilder;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.logging.Logger;
 
 public final class NmsAdapterImpl implements NmsAdapter {
 
-    private static final double DEFAULT_ENTITY_INTERACTION_RANGE = 3.0D;
-    private static final double DEFAULT_ATTACK_SPEED = 4.0D;
+    private static final NamespacedKey ATTACK_KEY = new NamespacedKey("cuteoldcombat", "attack_speed");
+    private static final NamespacedKey INTERACTION_KEY = new NamespacedKey("cuteoldcombat", "interaction_range");
+
+    private static final double DEFAULT_ATTACK_SPEED = 100.0D;
 
     private static final List<AgentPatch> PATCHES = List.of(
             LegacyKnockbackAdvice.patch(),
@@ -28,28 +33,61 @@ public final class NmsAdapterImpl implements NmsAdapter {
 
     @Override
     public void applyLegacyAttackSpeed(org.bukkit.entity.Player player) {
-        applyAttribute(player, Attribute.ATTACK_SPEED, 100.0D);
+        applyAttribute(player, Attribute.ATTACK_SPEED, ATTACK_KEY, DEFAULT_ATTACK_SPEED);
     }
 
     @Override
     public void restoreLegacyAttackSpeed(org.bukkit.entity.Player player) {
-        applyAttribute(player, Attribute.ATTACK_SPEED, DEFAULT_ATTACK_SPEED);
+        removeAttribute(player, Attribute.ATTACK_SPEED, ATTACK_KEY);
     }
 
     @Override
     public void applyLegacyEntityInteractionRange(org.bukkit.entity.Player player, double range) {
-        applyAttribute(player, Attribute.ENTITY_INTERACTION_RANGE, range);
+        applyAttribute(player, Attribute.ENTITY_INTERACTION_RANGE, INTERACTION_KEY, range);
     }
 
     @Override
     public void restoreLegacyEntityInteractionRange(org.bukkit.entity.Player player) {
-        applyAttribute(player, Attribute.ENTITY_INTERACTION_RANGE, DEFAULT_ENTITY_INTERACTION_RANGE);
+        removeAttribute(player, Attribute.ENTITY_INTERACTION_RANGE, INTERACTION_KEY);
     }
 
-    private static void applyAttribute(org.bukkit.entity.Player player, Attribute attribute, double value) {
+    private void applyAttribute(Player player, Attribute attribute, NamespacedKey key, double desired) {
+        if (player == null) {
+            return;
+        }
         AttributeInstance instance = player.getAttribute(attribute);
-        if (instance != null && instance.getBaseValue() != value) {
-            instance.setBaseValue(value);
+        if (instance == null) {
+            return;
+        }
+
+        for (AttributeModifier modifier : instance.getModifiers()) {
+            if (modifier.getKey().equals(key)) {
+                instance.removeModifier(modifier);
+                return;
+            }
+        }
+
+        double delta = desired - instance.getDefaultValue();
+        if (delta == 0.0D) {
+            return;
+        }
+
+        instance.addTransientModifier(new AttributeModifier(key, delta, AttributeModifier.Operation.ADD_NUMBER));
+    }
+
+
+    private void removeAttribute(Player player, Attribute attribute, NamespacedKey key) {
+        if (player == null) {
+            return;
+        }
+        AttributeInstance instance = player.getAttribute(attribute);
+        if (instance != null) {
+            for (AttributeModifier modifier : instance.getModifiers()) {
+                if (modifier.getKey().equals(key)) {
+                    instance.removeModifier(modifier);
+                    return;
+                }
+            }
         }
     }
 }
