@@ -77,15 +77,16 @@ public final class CuteOldCombat extends JavaPlugin {
         BridgeSync.syncKnockback(this);
         BridgeSync.syncLegacyCombat(this);
 
-        PatchInstaller.uninstall(instrumentation, getLogger());
-
         if (getConfig().getBoolean("enable")) {
-            PatchInstaller.install(instrumentation, getLogger(), getConfig());
+            if (!PatchInstaller.hasTransformer()) {
+                PatchInstaller.install(instrumentation, getLogger(), getConfig());
+            }
             attributeModifier = new AttributeModifier(this);
             legacyCombatListener = new LegacyCombatListener(this, attributeModifier);
             attributeModifier.initializeAttributes();
             getServer().getPluginManager().registerEvents(legacyCombatListener, this);
         } else {
+            PatchInstaller.uninstall(instrumentation, getLogger());
             attributeModifier = new AttributeModifier(this);
             attributeModifier.initializeAttributes();
             legacyCombatListener = null;
