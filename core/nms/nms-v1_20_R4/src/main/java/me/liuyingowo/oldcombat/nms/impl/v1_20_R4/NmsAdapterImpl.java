@@ -23,8 +23,7 @@ public final class NmsAdapterImpl implements NmsAdapter {
     private static final List<AgentPatch> PATCHES = List.of(
             LegacyKnockbackAdvice.patch(),
             LegacyDamageAdvice.patch(),
-            LegacyAttackAdvice.patch(),
-            LegacySoundEffectAdvice.patch()
+            LegacyAttackAdvice.patch()
     );
 
     @Override

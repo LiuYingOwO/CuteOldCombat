@@ -4,15 +4,19 @@ import io.papermc.paper.event.entity.EntityKnockbackEvent;
 import io.papermc.paper.event.player.PrePlayerAttackEntityEvent;
 import me.liuyingowo.oldcombat.nms.adapter.AgentPatch;
 import me.liuyingowo.oldcombat.nms.bridge.LegacyCombatBridge;
+import me.liuyingowo.oldcombat.nms.bridge.SoundBridge;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
@@ -39,6 +43,7 @@ import org.bukkit.event.entity.EntityExhaustionEvent.ExhaustionReason;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.util.Vector;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 public final class LegacyAttackAdvice {
@@ -103,7 +108,9 @@ public final class LegacyAttackAdvice {
             int i = 0;
             i += EnchantmentHelper.getKnockbackBonus(self);
             if (self.isSprinting() && flag) {
-                self.level().playSound(self, self.getX(), self.getY(), self.getZ(), SoundEvents.PLAYER_ATTACK_KNOCKBACK, self.getSoundSource(), 1.0f, 1.0f);
+                if (!SoundBridge.disable_knockback) {
+                    self.level().playSound(self, self.getX(), self.getY(), self.getZ(), SoundEvents.PLAYER_ATTACK_KNOCKBACK, self.getSoundSource(), 1.0f, 1.0f);
+                }
                 if (self instanceof ServerPlayer) {
                     ((ServerPlayer) self).connection.send(new ClientboundSoundPacket(
                             BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.PLAYER_ATTACK_KNOCKBACK),
@@ -211,7 +218,9 @@ public final class LegacyAttackAdvice {
                                 self,
                                 EntityKnockbackEvent.Cause.SWEEP_ATTACK);
                     }
-                    self.level().playSound(self, self.getX(), self.getY(), self.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, self.getSoundSource(), 1.0f, 1.0f);
+                    if (!SoundBridge.disable_sweep) {
+                        self.level().playSound(self, self.getX(), self.getY(), self.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, self.getSoundSource(), 1.0f, 1.0f);
+                    }
                     if (self instanceof ServerPlayer) {
                         ((ServerPlayer) self).connection.send(new ClientboundSoundPacket(
                                 BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.PLAYER_ATTACK_SWEEP),
@@ -239,7 +248,9 @@ public final class LegacyAttackAdvice {
                 }
 
                 if (flag2) {
-                    self.level().playSound(self, self.getX(), self.getY(), self.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, self.getSoundSource(), 1.0f, 1.0f);
+                    if (!SoundBridge.disable_attack) {
+                        self.level().playSound(self, self.getX(), self.getY(), self.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, self.getSoundSource(), 1.0f, 1.0f);
+                    }
                     if (self instanceof ServerPlayer) {
                         ((ServerPlayer) self).connection.send(new ClientboundSoundPacket(
                                 BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.PLAYER_ATTACK_CRIT),
@@ -250,14 +261,18 @@ public final class LegacyAttackAdvice {
 
                 if (!flag2 && !flag3) {
                     if (flag) {
-                        self.level().playSound(self, self.getX(), self.getY(), self.getZ(), SoundEvents.PLAYER_ATTACK_STRONG, self.getSoundSource(), 1.0f, 1.0f);
+                        if (!SoundBridge.disable_attack) {
+                            self.level().playSound(self, self.getX(), self.getY(), self.getZ(), SoundEvents.PLAYER_ATTACK_STRONG, self.getSoundSource(), 1.0f, 1.0f);
+                        }
                         if (self instanceof ServerPlayer) {
                             ((ServerPlayer) self).connection.send(new ClientboundSoundPacket(
                                     BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.PLAYER_ATTACK_STRONG),
                                     self.getSoundSource(), self.getX(), self.getY(), self.getZ(), 1.0f, 1.0f, self.random.nextLong()));
                         }
                     } else {
-                        self.level().playSound(self, self.getX(), self.getY(), self.getZ(), SoundEvents.PLAYER_ATTACK_WEAK, self.getSoundSource(), 1.0f, 1.0f);
+                        if (!SoundBridge.disable_attack) {
+                            self.level().playSound(self, self.getX(), self.getY(), self.getZ(), SoundEvents.PLAYER_ATTACK_WEAK, self.getSoundSource(), 1.0f, 1.0f);
+                        }
                         if (self instanceof ServerPlayer) {
                             ((ServerPlayer) self).connection.send(new ClientboundSoundPacket(
                                     BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.PLAYER_ATTACK_WEAK),
@@ -306,6 +321,7 @@ public final class LegacyAttackAdvice {
 
                 self.causeFoodExhaustion(self.level().spigotConfig.combatExhaustion, ExhaustionReason.ATTACK);
             } else {
+                // do not disable this sound
                 self.level().playSound(self, self.getX(), self.getY(), self.getZ(), SoundEvents.PLAYER_ATTACK_NODAMAGE, self.getSoundSource(), 1.0f, 1.0f);
                 if (self instanceof ServerPlayer) {
                     ((ServerPlayer) self).connection.send(new ClientboundSoundPacket(
