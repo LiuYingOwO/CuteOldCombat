@@ -1,6 +1,7 @@
 package me.liuyingowo.oldcombat;
 
 import me.liuyingowo.oldcombat.command.ReloadCommand;
+import me.liuyingowo.oldcombat.listener.LegacyAttributeListener;
 import me.liuyingowo.oldcombat.loader.Agent;
 import me.liuyingowo.oldcombat.loader.NmsBridgeInjector;
 import me.liuyingowo.oldcombat.loader.PatchInstaller;
@@ -16,7 +17,7 @@ public final class CuteOldCombat extends JavaPlugin {
 
     private ReloadCommand oldCombatCommand;
     private AttributeModifier attributeModifier;
-    private LegacyCombatListener legacyCombatListener;
+    private LegacyAttributeListener legacyCombatListener;
 
     @Override
     public void onLoad() {
@@ -39,7 +40,7 @@ public final class CuteOldCombat extends JavaPlugin {
     public void onEnable() {
         oldCombatCommand = new ReloadCommand(this);
         attributeModifier = new AttributeModifier(this);
-        legacyCombatListener = new LegacyCombatListener(this, attributeModifier);
+        legacyCombatListener = new LegacyAttributeListener(this, attributeModifier);
 
         attributeModifier.initializeAttributes();
 
@@ -84,7 +85,7 @@ public final class CuteOldCombat extends JavaPlugin {
                 PatchInstaller.install(instrumentation, getLogger(), getConfig());
             }
             attributeModifier = new AttributeModifier(this);
-            legacyCombatListener = new LegacyCombatListener(this, attributeModifier);
+            legacyCombatListener = new LegacyAttributeListener(this, attributeModifier);
             attributeModifier.initializeAttributes();
             getServer().getPluginManager().registerEvents(legacyCombatListener, this);
         } else {
