@@ -51,8 +51,8 @@ public final class NmsBridgeInjector {
             injected = true;
             logger.info("All Bridge injected into bootstrap classloader.");
 
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Failed to create files", e);
+        } catch (Throwable e) {
+            logger.log(Level.SEVERE, "Failed to inject the NMS bridge classes into bootstrap.", e);
         }
 
     }

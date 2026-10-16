@@ -3,11 +3,12 @@ package me.liuyingowo.oldcombat.nms.bridge;
 import java.lang.reflect.Field;
 
 /**
- * Loaded into bootstrap by {@code NmsBridgeInstaller}.
+ * Loaded into bootstrap by {@code NmsBridgeInjector}.
  *
  * <p>NMS classes cannot see the Bukkit plugin classloader, so injected advice
  * must only touch classes that are visible from the NMS side. Keep this class
- * dependency-free: primitives only, no Bukkit/Paper/plugin types.</p>
+ * dependency-free: JDK types only (primitives, {@code java.lang.*},
+ * {@code java.lang.reflect.*}) — no Bukkit/Paper/plugin types.</p>
  */
 public final class KnockbackBridge {
 

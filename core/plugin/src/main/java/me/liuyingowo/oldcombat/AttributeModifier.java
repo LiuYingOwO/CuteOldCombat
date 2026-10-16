@@ -31,11 +31,15 @@ public class AttributeModifier {
             return;
         }
         var adapter = NmsManager.getAdapter();
+        var config = plugin.getConfig();
 
-        if (plugin.getConfig().getBoolean("legacy_combat.enabled")) {
-            adapter.applyLegacyEntityInteractionRange(player, plugin.getConfig().getDouble("legacy_combat.reach-range"));
+        if (config.getBoolean("legacy_combat.enabled")) {
+            adapter.applyLegacyEntityInteractionRange(player, config.getDouble("legacy_combat.reach-range"));
+            adapter.applyLegacyAttackSpeed(player, config.getDouble("legacy_combat.attack-cooldown"));
+        } else {
+            adapter.restoreLegacyEntityInteractionRange(player);
+            adapter.restoreLegacyAttackSpeed(player);
         }
-        adapter.applyLegacyAttackSpeed(player, plugin.getConfig().getDouble("legacy_combat.attack-cooldown"));
     }
 
     public void restoreAttributes(Player player) {
