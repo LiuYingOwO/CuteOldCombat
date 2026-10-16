@@ -8,6 +8,19 @@ dependencies {
     paperweightDevelopmentBundle 'io.papermc.paper:dev-bundle:1.20.6-R0.1-SNAPSHOT'
 }
 
+tasks.named('paperweightUserdevSetup') {
+    mappedServerJar.set(
+            rootProject.layout.projectDirectory.file('build/.gradle/mapped/mappedServerJar-1.20.6.jar'),
+    )
+    reobfMappings.set(
+            rootProject.layout.projectDirectory.file('build/.gradle/mapped/reobfMappings-1.20.6.tiny')
+    )
+}
+
+tasks.named('jar') {
+    layout.buildDirectory.set(rootProject.layout.buildDirectory.dir("module/nms-1_20_R4"))
+}
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)

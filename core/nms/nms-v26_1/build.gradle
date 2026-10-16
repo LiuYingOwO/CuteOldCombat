@@ -8,6 +8,16 @@ dependencies {
     paperweight.paperDevBundle("26.1.2.build.+")
 }
 
+tasks.named('paperweightUserdevSetup') {
+    mappedServerJar.set(
+            rootProject.layout.projectDirectory.file('build/.gradle/mapped/mappedServerJar-26.1.2.jar'),
+    )
+}
+
+tasks.named('jar') {
+    layout.buildDirectory.set(rootProject.layout.buildDirectory.dir("module/nms-26_1"))
+}
+
 // 26.x dev bundles are consumed in Mojang namespace and do not provide reobf options.
 tasks.named("reobfJar") {
     enabled = false

@@ -41,6 +41,7 @@ dependencies {
 
 tasks.named('shadowJar') {
     archiveFileName = "${pluginName}.jar"
+    layout.buildDirectory.set(rootProject.layout.buildDirectory.dir("module/plugin"))
     destinationDirectory.set(rootProject.layout.buildDirectory.dir('libs'))
 
     manifest {
