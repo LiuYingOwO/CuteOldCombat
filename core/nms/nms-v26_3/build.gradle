@@ -10,7 +10,7 @@ dependencies {
 
 tasks.named('paperweightUserdevSetup') {
     mappedServerJar.set(
-            rootProject.layout.projectDirectory.file('build/.gradle/mapped/mappedServerJar-26.3.jar'),
+            rootProject.layout.projectDirectory.file('.gradle/mapped/mappedServerJar-26.3.jar'),
     )
 }
 
