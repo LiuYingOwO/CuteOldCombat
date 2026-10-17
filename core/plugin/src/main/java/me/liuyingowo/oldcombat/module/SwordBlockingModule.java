@@ -1,17 +1,22 @@
 package me.liuyingowo.oldcombat.module;
 
-import io.papermc.paper.event.player.PlayerStopUsingItemEvent;
-import me.liuyingowo.oldcombat.CuteOldCombat;
-import me.liuyingowo.oldcombat.nms.NmsManager;
 import org.bukkit.Bukkit;
+import org.bukkit.Tag;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.lang.reflect.Method;
 
 public class SwordBlockingModule extends Module {
 
@@ -21,186 +26,248 @@ public class SwordBlockingModule extends Module {
 
     @Override
     public void onLoad() {
-
+        initializeBlocking();
     }
 
     @Override
     public void onUnload() {
-
+        restoreAllBlocking();
     }
-
-    /** 总开关 + 配置开关 + 适配器能力位，三者都满足才启用。 */
-    static boolean isSupported(JavaPlugin plugin) {
-        return plugin.getConfig().getBoolean("enable")
-                && plugin.getConfig().getBoolean("sword-blocking.enabled", true)
-                && NmsManager.isInstalled()
-                && NmsManager.getAdapter().supportsLegacySwordBlocking();
-    }
-
-    /* ------------------------------ 打上组件 ------------------------------ */
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        scheduleApply(event.getPlayer());
+        var player = event.getPlayer();
+        player.getScheduler().runDelayed(plugin, scheduledTask -> applyBlocking(player), null, 1L);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        scheduleApply(event.getPlayer());
+        var player = event.getPlayer();
+        player.getScheduler().runDelayed(plugin, scheduledTask -> applyBlocking(player), null, 1L);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
-        scheduleApply(event.getPlayer());
+        var player = event.getPlayer();
+        player.getScheduler().runDelayed(plugin, scheduledTask -> applyBlocking(player), null, 1L);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerItemHeld(PlayerItemHeldEvent event) {
-        final Player player = event.getPlayer();
-        final int previousSlot = event.getPreviousSlot();
-        // 1 tick 后再做，理由同 LegacyCombatListener：让原版先把这个 tick 的背包/属性结算完
+        var player = event.getPlayer();
+        var previousSlot = event.getPreviousSlot();
         player.getScheduler().runDelayed(plugin, scheduledTask -> {
-            clearSlot(player, previousSlot);
-            applyMainHand(player);
+            restoreSlot(player, previousSlot);
+            applyBlocking(player);
         }, null, 1L);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerSwapHandItems(PlayerSwapHandItemsEvent event) {
-        final Player player = event.getPlayer();
+        var player = event.getPlayer();
         player.getScheduler().runDelayed(plugin, scheduledTask -> {
-            // 交换后主副手内容对调：两边都要重新看一遍（副手那个要摘掉）
-            clearHeld(player);
-            applyMainHand(player);
+            restoreHands(player);
+            applyBlocking(player);
         }, null, 1L);
     }
 
-    /* ------------------------------ 验收用观测点 ------------------------------ */
-
-    /**
-     * 松开右键时打一行：{@code ticksHeldFor} 就是服务端认定"你在使用这件物品"的 tick 数。
-     *
-     * <p>这是验证整条链路最省事的办法——按住右键 1 秒再松开，日志里应该出现 ~20。
-     * 如果是 0 或者这个事件根本不出现，说明服务端没进"使用中"状态（组件没打上/没同步）。</p>
-     *
-     * <p>注意取的是 {@code getTicksHeldFor()}：1.20.6 和 1.21.11 的 paper-api 都是这个名字
-     * （插件模块编译在 paper-api 1.20.6 上，所以只能用两代都有的访问器）。</p>
-     */
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerStopUsingItem(PlayerStopUsingItemEvent event) {
-        if (!plugin.getConfig().getBoolean("sword-blocking.debug", false)) {
-            return;
+    public void onPlayerDropItem(PlayerDropItemEvent event) {
+        var dropped = event.getItemDrop().getItemStack();
+        if (SwordBlockingComponents.clear(dropped)) {
+            event.getItemDrop().setItemStack(dropped);
         }
-        plugin.getLogger().info("[sword-blocking] stop-using"
-                + " player=" + event.getPlayer().getName()
-                + " item=" + event.getItem().getType()
-                + " ticksHeldFor=" + event.getTicksHeldFor());
-    }
-
-    /* ------------------------------ 摘掉组件 ------------------------------ */
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        // 组件跟着物品进 playerdata，退出时必须立刻清，否则下次上线还带着
-        clearHeld(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerDeath(PlayerDeathEvent event) {
-        // 掉落物会落到杀人者手里；keepInventory 时物品还在背包（那个由下次切槽兜住）
         for (ItemStack drop : event.getDrops()) {
-            clearStack(drop);
+            SwordBlockingComponents.clear(drop);
         }
     }
 
-    /* ------------------------------ 实现 ------------------------------ */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        sweepBlocking(event.getPlayer());
+    }
 
-    /** 供插件启用/重载时对在线玩家补打一遍。 */
-    public void applyNow(Player player) {
-        if (!isSupported(plugin)) {
+    public void initializeBlocking() {
+        if (blockingEnabled()) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                player.getScheduler().run(plugin, scheduledTask -> applyBlocking(player), null);
+            }
+        } else {
+            restoreAllBlocking();
+        }
+    }
+
+    public void applyBlocking(Player player) {
+        if (player == null || !blockingEnabled()) {
             return;
         }
-        applyMainHand(player);
+        var inventory = player.getInventory();
+        var mainHand = inventory.getItemInMainHand();
+        if (SwordBlockingComponents.apply(mainHand)) {
+            inventory.setItemInMainHand(mainHand);
+        }
     }
 
-    private void scheduleApply(Player player) {
-        player.getScheduler().runDelayed(plugin, scheduledTask -> applyMainHand(player), null, 1L);
-    }
-
-    private void applyMainHand(Player player) {
-        if (!isSupported(plugin)) {
+    // 清主手 + 副手 + 整个背包
+    public void sweepBlocking(Player player) {
+        if (player == null) {
             return;
         }
-        final PlayerInventory inventory = player.getInventory();
-        final ItemStack mainHand = inventory.getItemInMainHand();
-        if (applyStack(mainHand)) {
-            // 必须写回：组件是打在没有视图的物品对象上的，不写回不会触发槽位同步，
-            // 客户端收不到组件，姿势就不会出现
-            inventory.setItemInMainHand(mainHand);
-            debug(player, "applied");
-        }
-    }
+        var inventory = player.getInventory();
 
-    private boolean applyStack(ItemStack stack) {
-        if (stack == null || stack.getType().isAir()) {
-            return false;
-        }
-        return NmsManager.getAdapter().applyLegacySwordBlocking(stack);
-    }
-
-    private static void clearHeld(Player player) {
-        final PlayerInventory inventory = player.getInventory();
-        final ItemStack mainHand = inventory.getItemInMainHand();
-        if (clearStack(mainHand)) {
+        var mainHand = inventory.getItemInMainHand();
+        if (SwordBlockingComponents.clear(mainHand)) {
             inventory.setItemInMainHand(mainHand);
         }
-        final ItemStack offHand = inventory.getItemInOffHand();
-        if (clearStack(offHand)) {
+        var offHand = inventory.getItemInOffHand();
+        if (SwordBlockingComponents.clear(offHand)) {
             inventory.setItemInOffHand(offHand);
         }
-    }
 
-    private void clearSlot(Player player, int slot) {
-        final PlayerInventory inventory = player.getInventory();
-        final ItemStack item = inventory.getItem(slot);
-        if (clearStack(item)) {
-            inventory.setItem(slot, item);
-        }
-    }
-
-    private static boolean clearStack(ItemStack stack) {
-        if (stack == null || stack.getType().isAir() || !NmsManager.isInstalled()) {
-            return false;
-        }
-        return NmsManager.getAdapter().clearLegacySwordBlocking(stack);
-    }
-
-    /**
-     * 卸下/关闭时的兜底清理，把在线玩家手里的剑还原干净。
-     *
-     * <p>两条路径的差别是必须的：正常重载时走玩家自己的 region 调度器；
-     * 而 {@code onDisable} 期间插件调度器已经全部不可用（{@code isEnabled()} 已是 false，
-     * 任何 runTask 都会抛 IllegalPluginAccessException），只能就地执行。</p>
-     */
-    static void clearAll(CuteOldCombat plugin) {
-        final boolean schedulerAvailable = plugin.isEnabled();
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (schedulerAvailable) {
-                player.getScheduler().run(plugin, scheduledTask -> clearHeld(player), null);
-            } else {
-                clearHeld(player);
+        var storage = inventory.getStorageContents();
+        for (int slot = 0; slot < storage.length; slot++) {
+            if (SwordBlockingComponents.clear(storage[slot])) {
+                inventory.setItem(slot, storage[slot]);
             }
         }
     }
 
-    private void debug(Player player, String what) {
-        if (!plugin.getConfig().getBoolean("sword-blocking.debug", false)) {
+    public void restoreHands(Player player) {
+        if (player == null) {
             return;
         }
-        plugin.getLogger().info("[sword-blocking] " + what
-                + " player=" + player.getName()
-                + " main=" + player.getInventory().getItemInMainHand().getType()
-                + " serverIsBlocking=" + NmsManager.getAdapter().isLegacySwordBlocking(player));
+        var inventory = player.getInventory();
+        var mainHand = inventory.getItemInMainHand();
+        if (SwordBlockingComponents.clear(mainHand)) {
+            inventory.setItemInMainHand(mainHand);
+        }
+        var offHand = inventory.getItemInOffHand();
+        if (SwordBlockingComponents.clear(offHand)) {
+            inventory.setItemInOffHand(offHand);
+        }
     }
 
+    public void restoreAllBlocking() {
+        boolean schedulerAvailable = plugin.isEnabled();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (schedulerAvailable) {
+                player.getScheduler().run(plugin, scheduledTask -> sweepBlocking(player), null);
+            } else {
+                sweepBlocking(player);
+            }
+        }
+    }
+
+    private void restoreSlot(Player player, int slot) {
+        var inventory = player.getInventory();
+        var item = inventory.getItem(slot);
+        if (SwordBlockingComponents.clear(item)) {
+            inventory.setItem(slot, item);
+        }
+    }
+
+    private boolean blockingEnabled() {
+        return SwordBlockingComponents.available()
+                && plugin.getConfig().getBoolean("enable")
+                && plugin.getConfig().getBoolean("sword_blocking.enabled", true);
+    }
+
+
+    public static class SwordBlockingComponents {
+        /** 30 天；{@code consumeSeconds * 20} 必须 < Integer.MAX_VALUE（约 107 天）。 */
+        private static final float CONSUME_SECONDS = 2_592_000.0F;
+
+        private static final boolean AVAILABLE;
+        private static final Method SET_DATA;
+        private static final Method HAS_DATA;
+        private static final Method UNSET_DATA;
+        private static final Object CONSUMABLE_TYPE;
+        private static final Object CONSUMABLE_VALUE;
+
+        static {
+            boolean available = false;
+            Method setData = null;
+            Method hasData = null;
+            Method unsetData = null;
+            Object type = null;
+            Object value = null;
+
+            try {
+                Class<?> componentTypes = Class.forName("io.papermc.paper.datacomponent.DataComponentTypes");
+                Class<?> componentType = Class.forName("io.papermc.paper.datacomponent.DataComponentType");
+                Class<?> valuedType = Class.forName("io.papermc.paper.datacomponent.DataComponentType$Valued");
+                Class<?> consumable = Class.forName("io.papermc.paper.datacomponent.item.Consumable");
+                Class<?> consumableBuilder = Class.forName("io.papermc.paper.datacomponent.item.Consumable$Builder");
+                Class<?> animation = Class.forName("io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation");
+
+                type = componentTypes.getField("CONSUMABLE").get(null);
+
+                Object builder = consumable.getMethod("consumable").invoke(null);
+                builder = consumableBuilder.getMethod("consumeSeconds", float.class).invoke(builder, CONSUME_SECONDS);
+                builder = consumableBuilder.getMethod("animation", animation).invoke(builder, animation.getField("BLOCK").get(null));
+                builder = consumableBuilder.getMethod("hasConsumeParticles", boolean.class).invoke(builder, false);
+                value = consumableBuilder.getMethod("build").invoke(builder);
+
+                setData = ItemStack.class.getMethod("setData", valuedType, Object.class);
+                hasData = ItemStack.class.getMethod("hasData", componentType);
+                unsetData = ItemStack.class.getMethod("unsetData", componentType);
+                available = true;
+            } catch (Throwable ignored) {
+                // 1.20.6 / 1.21.x 早期版本的 paper-api：没有 data component API，功能自动停用
+                available = false;
+            }
+
+            AVAILABLE = available;
+            SET_DATA = setData;
+            HAS_DATA = hasData;
+            UNSET_DATA = unsetData;
+            CONSUMABLE_TYPE = type;
+            CONSUMABLE_VALUE = value;
+        }
+
+        private SwordBlockingComponents() {
+        }
+
+        public static boolean available() {
+            return AVAILABLE;
+        }
+
+        public static boolean isSword(ItemStack stack) {
+            return stack != null && !stack.getType().isAir() && Tag.ITEMS_SWORDS.isTagged(stack.getType());
+        }
+
+        public static boolean apply(ItemStack stack) {
+            if (!AVAILABLE || !isSword(stack)) {
+                return false;
+            }
+            try {
+                if ((Boolean) HAS_DATA.invoke(stack, CONSUMABLE_TYPE)) {
+                    return false;
+                }
+                SET_DATA.invoke(stack, CONSUMABLE_TYPE, CONSUMABLE_VALUE);
+                return true;
+            } catch (Throwable ignored) {
+                return false;
+            }
+        }
+
+        public static boolean clear(ItemStack stack) {
+            if (!AVAILABLE || !isSword(stack)) {
+                return false;
+            }
+            try {
+                if (!(Boolean) HAS_DATA.invoke(stack, CONSUMABLE_TYPE)) {
+                    return false;
+                }
+                UNSET_DATA.invoke(stack, CONSUMABLE_TYPE);
+                return true;
+            } catch (Throwable ignored) {
+                return false;
+            }
+        }
+    }
 }

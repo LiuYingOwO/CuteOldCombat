@@ -21,7 +21,8 @@ public final class NmsAdapterImpl implements NmsAdapter {
             LegacyKnockbackAdvice.patch(),
             LegacyDamageAdvice.patch(),
             LegacyAttackAdvice.patch(),
-            LegacySoundEffectAdvice.patch()
+            LegacySoundEffectAdvice.patch(),
+            LegacySwordBlockAdvice.patch()
     );
 
     @Override

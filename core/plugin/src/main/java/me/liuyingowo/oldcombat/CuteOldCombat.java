@@ -6,6 +6,7 @@ import me.liuyingowo.oldcombat.loader.NmsBridgeInjector;
 import me.liuyingowo.oldcombat.loader.PatchInstaller;
 import me.liuyingowo.oldcombat.module.LegacyAttributeModule;
 import me.liuyingowo.oldcombat.module.ModuleLoader;
+import me.liuyingowo.oldcombat.module.SwordBlockingModule;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.instrument.Instrumentation;
@@ -39,9 +40,11 @@ public final class CuteOldCombat extends JavaPlugin {
 
         this.loader = new ModuleLoader();
         loader.register(new LegacyAttributeModule(this));
+        loader.register(new SwordBlockingModule(this));
 
         if (getConfig().getBoolean("enable")) {
             loader.enable(LegacyAttributeModule.class);
+            loader.enable(SwordBlockingModule.class);
         }
 
         getLogger().info("Loaded Complete.");
@@ -75,10 +78,12 @@ public final class CuteOldCombat extends JavaPlugin {
             }
 
             loader.reload(LegacyAttributeModule.class);
+            loader.reload(SwordBlockingModule.class);
         } else {
             PatchInstaller.uninstall(instrumentation, getLogger());
 
             loader.disable(LegacyAttributeModule.class);
+            loader.disable(SwordBlockingModule.class);
         }
     }
 }

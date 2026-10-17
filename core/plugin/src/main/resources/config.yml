@@ -8,6 +8,10 @@ legacy_combat:
   enable-legacy-damage: true
   critical-while-sprinting: true
 
+# only support 1.21.11+ !
+sword_blocking:
+  enabled: false
+
 sounds:
   disable-sweep: true
   disable-attack: true
