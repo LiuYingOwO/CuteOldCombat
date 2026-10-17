@@ -39,17 +39,12 @@ public abstract class Module implements Listener {
     }
 
     public final void reloadModule() {
-        if (!enabled) {
-            return;
-        }
         HandlerList.unregisterAll(this);
-        enabled = false;
 
         onUnload();
         onLoad();
 
         Bukkit.getPluginManager().registerEvents(this, plugin);
-        enabled = true;
         plugin.getLogger().info("Reloaded Module: " + this.getClass().getSimpleName());
     }
 
