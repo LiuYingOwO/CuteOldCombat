@@ -6,7 +6,6 @@ import me.liuyingowo.oldcombat.loader.NmsBridgeInjector;
 import me.liuyingowo.oldcombat.loader.PatchInstaller;
 import me.liuyingowo.oldcombat.module.LegacyAttributeModule;
 import me.liuyingowo.oldcombat.module.ModuleLoader;
-import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.instrument.Instrumentation;
@@ -50,8 +49,6 @@ public final class CuteOldCombat extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        HandlerList.unregisterAll(this);
-
         PatchInstaller.uninstall(instrumentation, getLogger());
 
         if (oldCombatCommand != null) {

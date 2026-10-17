@@ -25,7 +25,7 @@ public class LegacyAttributeModule extends Module {
     @Override
     public void onUnload() {
         for (var player : Bukkit.getOnlinePlayers()) {
-            player.getScheduler().run(plugin, scheduledTask -> restoreAttributes(player), null);
+            restoreAttributes(player);
         }
     }
 
