@@ -1,5 +1,6 @@
 package me.liuyingowo.oldcombat.module;
 
+import me.liuyingowo.oldcombat.nms.Version;
 import org.bukkit.Bukkit;
 import org.bukkit.Tag;
 import org.bukkit.entity.Player;
@@ -26,6 +27,7 @@ public class SwordBlockingModule extends Module {
 
     @Override
     public void onLoad() {
+        warnIfBlockingUnavailable();
         initializeBlocking();
     }
 
@@ -176,6 +178,26 @@ public class SwordBlockingModule extends Module {
                 && plugin.getConfig().getBoolean("sword_blocking.enabled", true);
     }
 
+    private void warnIfBlockingUnavailable() {
+        if (!plugin.getConfig().getBoolean("enable")
+                || !plugin.getConfig().getBoolean("sword-blocking.enabled", true)
+                || SwordBlockingComponents.available()) {
+            return;
+        }
+
+        String version = Version.getCurrentMinecraftVersion();
+        if (Version.CURRENT == null || Version.CURRENT == Version.v1_20_R4) {
+            plugin.getLogger().info("Sword blocking is unavailable on " + version
+                    + "; the feature stays disabled.");
+            return;
+        }
+
+        plugin.getLogger().warning("Sword blocking is DISABLED on " + version
+                + ": Paper data-component API could not be initialised ("
+                + SwordBlockingComponents.failureReason() + "). "
+        );
+    }
+
 
     public static class SwordBlockingComponents {
         /** 30 天；{@code consumeSeconds * 20} 必须 < Integer.MAX_VALUE（约 107 天）。 */
@@ -187,6 +209,7 @@ public class SwordBlockingModule extends Module {
         private static final Method UNSET_DATA;
         private static final Object CONSUMABLE_TYPE;
         private static final Object CONSUMABLE_VALUE;
+        private static final String FAILURE_REASON;
 
         static {
             boolean available = false;
@@ -195,6 +218,7 @@ public class SwordBlockingModule extends Module {
             Method unsetData = null;
             Object type = null;
             Object value = null;
+            String failure = null;
 
             try {
                 Class<?> componentTypes = Class.forName("io.papermc.paper.datacomponent.DataComponentTypes");
@@ -216,9 +240,10 @@ public class SwordBlockingModule extends Module {
                 hasData = ItemStack.class.getMethod("hasData", componentType);
                 unsetData = ItemStack.class.getMethod("unsetData", componentType);
                 available = true;
-            } catch (Throwable ignored) {
+            } catch (Throwable t) {
                 // 1.20.6 / 1.21.x 早期版本的 paper-api：没有 data component API，功能自动停用
                 available = false;
+                failure = t.getClass().getSimpleName() + (t.getMessage() == null ? "" : ": " + t.getMessage());
             }
 
             AVAILABLE = available;
@@ -227,6 +252,7 @@ public class SwordBlockingModule extends Module {
             UNSET_DATA = unsetData;
             CONSUMABLE_TYPE = type;
             CONSUMABLE_VALUE = value;
+            FAILURE_REASON = failure;
         }
 
         private SwordBlockingComponents() {
@@ -234,6 +260,10 @@ public class SwordBlockingModule extends Module {
 
         public static boolean available() {
             return AVAILABLE;
+        }
+
+        public static String failureReason() {
+            return FAILURE_REASON;
         }
 
         public static boolean isSword(ItemStack stack) {
