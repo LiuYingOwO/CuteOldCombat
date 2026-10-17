@@ -187,7 +187,7 @@ public class SwordBlockingModule extends Module {
 
         String version = Version.getCurrentMinecraftVersion();
         if (Version.CURRENT == null || Version.CURRENT == Version.v1_20_R4) {
-            plugin.getLogger().info("Sword blocking is unavailable on " + version
+            plugin.getLogger().warning("Sword blocking is unavailable on " + version
                     + "; the feature stays disabled.");
             return;
         }
