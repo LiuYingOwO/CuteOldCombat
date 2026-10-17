@@ -16,15 +16,15 @@ public class ModuleLoader {
     }
 
     public void enable(Class<? extends Module> type) {
-        require(type).load();
+        require(type).loadModule();
     }
 
     public void disable(Class<? extends Module> type) {
-        require(type).unload();
+        require(type).unloadModule();
     }
 
     public void reload(Class<? extends Module> type) {
-        require(type).reload();
+        require(type).reloadModule();
     }
 
     public void shutdown() {
@@ -33,10 +33,10 @@ public class ModuleLoader {
 
         for (Module module : reverse) {
             try {
-                module.unload();
+                module.unloadModule();
             } catch (RuntimeException exception) {
                 module.plugin.getLogger().log(Level.WARNING,
-                        "Failed to unload Module: " + module.getClass().getSimpleName(),
+                        "Failed to unloadModule Module: " + module.getClass().getSimpleName(),
                         exception
                 );
             }

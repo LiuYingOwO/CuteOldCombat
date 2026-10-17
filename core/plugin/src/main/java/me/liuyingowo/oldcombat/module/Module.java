@@ -18,7 +18,7 @@ public abstract class Module implements Listener {
 
     protected abstract void onUnload();
 
-    public final void load() {
+    public final void loadModule() {
         if (enabled) {
             return;
         }
@@ -28,7 +28,7 @@ public abstract class Module implements Listener {
         plugin.getLogger().info("Loaded Module: " + this.getClass().getSimpleName());
     }
 
-    public final void unload() {
+    public final void unloadModule() {
         if (!enabled) {
             return;
         }
@@ -38,15 +38,15 @@ public abstract class Module implements Listener {
         plugin.getLogger().info("Unloaded Module: " + this.getClass().getSimpleName());
     }
 
-    public final void reload() {
+    public final void reloadModule() {
         if (!enabled) {
             return;
         }
-        unload();
-        load();
+        unloadModule();
+        loadModule();
     }
 
-    public final boolean isEnabled() {
+    public final boolean isModuleEnabled() {
         return enabled;
     }
 }
