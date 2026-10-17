@@ -1,6 +1,7 @@
 package me.liuyingowo.oldcombat.module;
 
 import java.util.*;
+import java.util.logging.Level;
 
 public class ModuleLoader {
 
@@ -34,7 +35,10 @@ public class ModuleLoader {
             try {
                 module.unload();
             } catch (RuntimeException exception) {
-                // 记录错误，但继续关闭其他模块
+                module.plugin.getLogger().log(Level.WARNING,
+                        "Failed to unload Module: " + module.getClass().getSimpleName(),
+                        exception
+                );
             }
         }
     }
