@@ -74,7 +74,7 @@ public final class PatchInstaller {
             // java.lang.NoClassDefFoundError: net/bytebuddy/agent/builder/AgentBuilder$CircularityLock$Inactive
             AgentBuilder.CircularityLock.Inactive.INSTANCE.acquire();
 
-            logger.info("Loading Complete. >w<");
+            logger.info("Patch Loaded Complete.");
         } catch (Throwable throwable) {
             logger.log(Level.SEVERE, "Could not install NMS patches.", throwable);
         }

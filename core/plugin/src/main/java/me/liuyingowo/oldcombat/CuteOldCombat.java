@@ -1,11 +1,11 @@
 package me.liuyingowo.oldcombat;
 
 import me.liuyingowo.oldcombat.command.ReloadCommand;
-import me.liuyingowo.oldcombat.listener.LegacyAttributeListener;
 import me.liuyingowo.oldcombat.loader.Agent;
 import me.liuyingowo.oldcombat.loader.NmsBridgeInjector;
 import me.liuyingowo.oldcombat.loader.PatchInstaller;
-import org.bukkit.Bukkit;
+import me.liuyingowo.oldcombat.module.LegacyAttributeModule;
+import me.liuyingowo.oldcombat.module.ModuleLoader;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -14,10 +14,8 @@ import java.lang.instrument.Instrumentation;
 public final class CuteOldCombat extends JavaPlugin {
 
     private Instrumentation instrumentation;
-
+    private ModuleLoader loader;
     private ReloadCommand oldCombatCommand;
-    private AttributeModifier attributeModifier;
-    private LegacyAttributeListener legacyCombatListener;
 
     @Override
     public void onLoad() {
@@ -39,14 +37,15 @@ public final class CuteOldCombat extends JavaPlugin {
     @Override
     public void onEnable() {
         oldCombatCommand = new ReloadCommand(this);
-        attributeModifier = new AttributeModifier(this);
-        legacyCombatListener = new LegacyAttributeListener(this, attributeModifier);
 
-        attributeModifier.initializeAttributes();
+        this.loader = new ModuleLoader();
+        loader.register(new LegacyAttributeModule(this));
 
         if (getConfig().getBoolean("enable")) {
-            getServer().getPluginManager().registerEvents(legacyCombatListener, this);
+            loader.enable(LegacyAttributeModule.class);
         }
+
+        getLogger().info("Loaded Complete.");
     }
 
     @Override
@@ -55,22 +54,15 @@ public final class CuteOldCombat extends JavaPlugin {
 
         PatchInstaller.uninstall(instrumentation, getLogger());
 
-        if (attributeModifier != null) {
-            for (var player : Bukkit.getOnlinePlayers()) {
-                attributeModifier.restoreAttributes(player);
-            }
-        }
         if (oldCombatCommand != null) {
             oldCombatCommand.unregister(this);
         }
-        legacyCombatListener = null;
-        attributeModifier = null;
+        loader.shutdown();
+        loader = null;
         instrumentation = null;
     }
 
     public void reload() {
-        HandlerList.unregisterAll(this);
-
         saveDefaultConfig();
         reloadConfig();
         getConfig().options().copyDefaults(true);
@@ -84,15 +76,12 @@ public final class CuteOldCombat extends JavaPlugin {
             if (!PatchInstaller.hasTransformer()) {
                 PatchInstaller.install(instrumentation, getLogger(), getConfig());
             }
-            attributeModifier = new AttributeModifier(this);
-            legacyCombatListener = new LegacyAttributeListener(this, attributeModifier);
-            attributeModifier.initializeAttributes();
-            getServer().getPluginManager().registerEvents(legacyCombatListener, this);
+
+            loader.reload(LegacyAttributeModule.class);
         } else {
             PatchInstaller.uninstall(instrumentation, getLogger());
-            attributeModifier = new AttributeModifier(this);
-            attributeModifier.initializeAttributes();
-            legacyCombatListener = null;
+
+            loader.disable(LegacyAttributeModule.class);
         }
     }
 }

@@ -27,13 +27,13 @@ public class BridgeSync {
         KnockbackBridge.setMinDirectionLength(minDirectionLength);
         KnockbackBridge.setApplyResistance(applyResistance);
 
-        logger.info("Knockback updated: enabled=" + enabled
-                + ", horizontal=" + horizontal
-                + ", vertical=" + vertical
-                + ", verticalLimit=" + verticalLimit
-                + ", friction=" + friction
-                + ", minDirectionLength=" + minDirectionLength
-                + ", applyResistance=" + applyResistance);
+//        logger.info("Knockback updated: enabled=" + enabled
+//                + ", horizontal=" + horizontal
+//                + ", vertical=" + vertical
+//                + ", verticalLimit=" + verticalLimit
+//                + ", friction=" + friction
+//                + ", minDirectionLength=" + minDirectionLength
+//                + ", applyResistance=" + applyResistance);
     }
 
     public static void syncLegacyCombat(Plugin plugin) {

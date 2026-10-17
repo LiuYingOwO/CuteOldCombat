@@ -14,4 +14,21 @@ public interface NmsAdapter {
     void applyLegacyEntityInteractionRange(Player player, double range);
 
     void restoreLegacyEntityInteractionRange(Player player);
+
+    default boolean supportsLegacySwordBlocking() {
+        return false;
+    }
+
+    default boolean applyLegacySwordBlocking(org.bukkit.inventory.ItemStack stack) {
+        return false;
+    }
+
+    default boolean clearLegacySwordBlocking(org.bukkit.inventory.ItemStack stack) {
+        return false;
+    }
+
+    // for debug
+    default boolean isLegacySwordBlocking(Player player) {
+        return false;
+    }
 }
