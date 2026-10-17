@@ -200,7 +200,6 @@ public class SwordBlockingModule extends Module {
 
 
     public static class SwordBlockingComponents {
-        /** 30 天；{@code consumeSeconds * 20} 必须 < Integer.MAX_VALUE（约 107 天）。 */
         private static final float CONSUME_SECONDS = 2_592_000.0F;
 
         private static final boolean AVAILABLE;
