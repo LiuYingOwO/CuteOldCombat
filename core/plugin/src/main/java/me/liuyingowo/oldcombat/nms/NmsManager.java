@@ -26,7 +26,7 @@ public final class NmsManager {
         Version version = Version.CURRENT;
 
         if (version == null) {
-            logger.severe("Unsupported Minecraft version! Detected: "
+            logger.severe("[NmsManager] Unsupported Minecraft version! Detected: "
                     + Version.getCurrentMinecraftVersion());
             return false;
         }
@@ -36,26 +36,26 @@ public final class NmsManager {
         }
 
         String className = "me.liuyingowo.oldcombat.nms.impl." + version.name() + ".NmsAdapterImpl";
-        logger.info("Detected server version: " + version.name());
+        logger.info("[NmsManager] Detected server version: " + version.name());
 
         try {
             Class<?> implClass = Class.forName(className, true, NmsManager.class.getClassLoader());
 
             if (!NmsAdapter.class.isAssignableFrom(implClass)) {
-                logger.severe(className + " does not implement NmsAdapter.");
+                logger.severe("[NmsManager]" + className + " does not implement NmsAdapter.");
                 return false;
             }
 
             Constructor<?> constructor = implClass.getDeclaredConstructor();
             adapter = (NmsAdapter) constructor.newInstance();
 
-            logger.info("NmsAdapter loaded: " + adapter.getClass().getName());
+            logger.info("[NmsManager] Adapter loaded: " + adapter.getClass().getName());
             return true;
         } catch (ClassNotFoundException e) {
-            logger.severe("NMS adapter class not found: " + className);
+            logger.severe("[NmsManager] NMS adapter class not found: " + className);
             return false;
         } catch (Exception e) {
-            logger.severe("Failed to instantiate NMS adapter: " + e.getMessage());
+            logger.severe("[NmsManager] Failed to instantiate NMS adapter: " + e.getMessage());
             return false;
         }
     }
@@ -67,7 +67,9 @@ public final class NmsManager {
      */
     public static NmsAdapter getAdapter() {
         if (adapter == null) {
-            throw new IllegalStateException("NmsAdapter has not been initialized. Call NmsManager.install() during onLoad.");
+            throw new IllegalStateException(
+                    "[NmsManager] NmsAdapter has not been initialized. Call NmsManager.install() during onLoad."
+            );
         }
         return adapter;
     }
