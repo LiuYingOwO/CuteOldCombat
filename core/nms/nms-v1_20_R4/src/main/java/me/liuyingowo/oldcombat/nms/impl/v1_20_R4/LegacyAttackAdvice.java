@@ -317,8 +317,15 @@ public final class LegacyAttackAdvice {
 
                 self.causeFoodExhaustion(self.level().spigotConfig.combatExhaustion, ExhaustionReason.ATTACK);
             } else {
-                // do not disable this sound
-                self.level().playSound(self, self.getX(), self.getY(), self.getZ(), SoundEvents.PLAYER_ATTACK_NODAMAGE, self.getSoundSource(), 1.0f, 1.0f);
+                if (!SoundBridge.disable_nodamage) {
+                    self.level().playSound(
+                            self,
+                            self.getX(), self.getY(), self.getZ(),
+                            SoundEvents.PLAYER_ATTACK_NODAMAGE,
+                            self.getSoundSource(),
+                            1.0f, 1.0f
+                    );
+                }
                 if (self instanceof ServerPlayer) {
                     ((ServerPlayer) self).connection.send(new ClientboundSoundPacket(
                             BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.PLAYER_ATTACK_NODAMAGE),

@@ -40,6 +40,9 @@ public final class LegacySoundEffectAdvice {
                 || soundEvent == SoundEvents.PLAYER_ATTACK_CRIT)) {
             return true;
         }
+        if (SoundBridge.disable_nodamage && soundEvent == SoundEvents.PLAYER_ATTACK_NODAMAGE) {
+            return true;
+        }
         if (SoundBridge.disable_knockback && soundEvent == SoundEvents.PLAYER_ATTACK_KNOCKBACK) {
             return true;
         }

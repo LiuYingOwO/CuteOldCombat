@@ -56,10 +56,12 @@ public class BridgeSync {
         boolean disable_sweep = config.getBoolean("sounds.disable-sweep");
         boolean disable_attack = config.getBoolean("sounds.disable-attack");
         boolean disable_knockback = config.getBoolean("sounds.disable-knockback");
+        boolean disable_nodamage = config.getBoolean("sounds.disable-nodamage");
 
         SoundBridge.setDisableSweep(disable_sweep);
         SoundBridge.setDisableAttack(disable_attack);
         SoundBridge.setDisableKnockback(disable_knockback);
+        SoundBridge.setDisableNodamage(disable_nodamage);
     }
 
 }

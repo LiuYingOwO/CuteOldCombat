@@ -7,6 +7,7 @@ public class SoundBridge {
     public static volatile boolean disable_sweep;
     public static volatile boolean disable_attack;
     public static volatile boolean disable_knockback;
+    public static volatile boolean disable_nodamage;
 
     private SoundBridge() {}
 
@@ -27,6 +28,7 @@ public class SoundBridge {
         disable_attack = true;
         disable_sweep = true;
         disable_knockback = true;
+        disable_nodamage = true;
     }
 
     public static void setDisableSweep(boolean disable_sweep) {
@@ -47,6 +49,13 @@ public class SoundBridge {
         try {
             Field field = soundBridgeClass.getDeclaredField("disable_knockback");
             field.set(null, disable_knockback);
+        } catch (ReflectiveOperationException ignored) {}
+    }
+
+    public static void setDisableNodamage(boolean disable_nodamage) {
+        try {
+            Field field = soundBridgeClass.getDeclaredField("disable_nodamage");
+            field.set(null, disable_nodamage);
         } catch (ReflectiveOperationException ignored) {}
     }
 }

@@ -43,6 +43,9 @@ public class LegacySoundEffectAdvice {
         if (SoundBridge.disable_knockback && soundEvent == SoundEvents.PLAYER_ATTACK_KNOCKBACK) {
             return true;
         }
+        if (SoundBridge.disable_nodamage && soundEvent == SoundEvents.PLAYER_ATTACK_NODAMAGE) {
+            return true;
+        }
         if (SoundBridge.disable_sweep && soundEvent == SoundEvents.PLAYER_ATTACK_SWEEP) {
             return true;
         }

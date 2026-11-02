@@ -16,6 +16,7 @@ sounds:
   disable-sweep: true
   disable-attack: true
   disable-knockback: true
+  disable-nodamage: true
 
 knockback:
   enabled: false
