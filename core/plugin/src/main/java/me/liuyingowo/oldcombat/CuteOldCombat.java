@@ -1,7 +1,7 @@
 package me.liuyingowo.oldcombat;
 
 import me.liuyingowo.oldcombat.command.ReloadCommand;
-import me.liuyingowo.oldcombat.loader.Agent;
+import me.liuyingowo.oldcombat.loader.InstrumentOperator;
 import me.liuyingowo.oldcombat.loader.NmsBridgeInjector;
 import me.liuyingowo.oldcombat.loader.PatchInstaller;
 import me.liuyingowo.oldcombat.module.LegacyAttributeModule;
@@ -24,7 +24,7 @@ public final class CuteOldCombat extends JavaPlugin {
         getConfig().options().copyDefaults(true);
         saveConfig();
 
-        this.instrumentation = Agent.getInstrumentation();
+        this.instrumentation = InstrumentOperator.getInstrumentation(getLogger());
 
         NmsBridgeInjector.injectIfNeeded(instrumentation, getLogger());
         PatchInstaller.install(instrumentation, getLogger(), getConfig());
