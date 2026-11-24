@@ -2,11 +2,12 @@ package me.liuyingowo.oldcombat;
 
 import me.liuyingowo.oldcombat.command.ReloadCommand;
 import me.liuyingowo.oldcombat.loader.InstrumentOperator;
-import me.liuyingowo.oldcombat.loader.NmsBridgeInjector;
+import me.liuyingowo.oldcombat.loader.NmsInjector;
 import me.liuyingowo.oldcombat.loader.PatchInstaller;
 import me.liuyingowo.oldcombat.module.LegacyAttributeModule;
 import me.liuyingowo.oldcombat.module.ModuleLoader;
 import me.liuyingowo.oldcombat.module.SwordBlockingModule;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.instrument.Instrumentation;
@@ -26,7 +27,7 @@ public final class CuteOldCombat extends JavaPlugin {
 
         this.instrumentation = InstrumentOperator.getInstrumentation(getLogger());
 
-        NmsBridgeInjector.injectIfNeeded(instrumentation, getLogger());
+        NmsInjector.injectIfNeeded(instrumentation, Bukkit.getServer().getClass().getClassLoader(), getLogger());
         PatchInstaller.install(instrumentation, getLogger(), getConfig());
 
         BridgeSync.syncKnockback(this);

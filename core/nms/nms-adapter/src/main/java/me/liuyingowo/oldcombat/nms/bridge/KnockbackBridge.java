@@ -1,5 +1,7 @@
 package me.liuyingowo.oldcombat.nms.bridge;
 
+import me.liuyingowo.oldcombat.nms.Inject;
+
 import java.lang.reflect.Field;
 
 /**
@@ -10,6 +12,7 @@ import java.lang.reflect.Field;
  * dependency-free: JDK types only (primitives, {@code java.lang.*},
  * {@code java.lang.reflect.*}) — no Bukkit/Paper/plugin types.</p>
  */
+@Inject(injectType = Inject.InjectType.BRIDGE)
 public final class KnockbackBridge {
 
     public static volatile boolean enabled;

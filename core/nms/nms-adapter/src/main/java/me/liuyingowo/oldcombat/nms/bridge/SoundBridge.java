@@ -1,7 +1,10 @@
 package me.liuyingowo.oldcombat.nms.bridge;
 
+import me.liuyingowo.oldcombat.nms.Inject;
+
 import java.lang.reflect.Field;
 
+@Inject(injectType = Inject.InjectType.BRIDGE)
 public class SoundBridge {
 
     public static volatile boolean disable_sweep;

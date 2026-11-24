@@ -44,11 +44,4 @@ public class InstrumentOperator {
         instrumentation = (fromAgent != null) ? fromAgent : ByteBuddyAgent.install();
         return instrumentation;
     }
-
-    public static synchronized void redefineModule(Logger logger) {
-        if (instrumentation == null) {
-            logger.info("Instrumentation is null, call getInstrumentation first.");
-            return;
-        }
-    }
 }
