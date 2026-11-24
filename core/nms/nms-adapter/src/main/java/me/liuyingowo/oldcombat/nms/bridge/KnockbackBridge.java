@@ -30,9 +30,7 @@ public final class KnockbackBridge {
     static {
         try {
             knockbackBridgeClass = Class.forName(
-                    "me.liuyingowo.oldcombat.nms.bridge.KnockbackBridge",
-                    false,
-                    null
+                    "me.liuyingowo.oldcombat.nms.bridge.KnockbackBridge"
             );
         } catch (ClassNotFoundException e) {
             e.printStackTrace();

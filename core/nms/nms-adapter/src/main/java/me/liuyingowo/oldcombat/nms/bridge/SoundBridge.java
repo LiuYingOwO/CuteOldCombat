@@ -19,9 +19,7 @@ public class SoundBridge {
     static {
         try {
             soundBridgeClass = Class.forName(
-                    "me.liuyingowo.oldcombat.nms.bridge.SoundBridge",
-                    false,
-                    null
+                    "me.liuyingowo.oldcombat.nms.bridge.SoundBridge"
             );
         } catch (ClassNotFoundException e) {
             e.printStackTrace();

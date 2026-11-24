@@ -36,9 +36,13 @@ public final class NmsInjector {
         }
 
         try {
+            Map<String, byte[]> classes = readInjectClasses(logger);
+            if (classes.isEmpty()) {
+                throw new RuntimeException("Inject Class is Empty.");
+            }
             ClassInjector.UsingUnsafe.Factory.resolve(instrumentation)
                     .make(targetLoader)
-                    .injectRaw(readInjectClasses(logger));
+                    .injectRaw(classes);
             logger.info("All classes requiring injection have been injected into " + targetLoader);
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Failed to inject the NMS bridge classes into " + targetLoader + ".", e);
@@ -77,23 +81,20 @@ public final class NmsInjector {
                     }
                 }
             }
-            for (Map.Entry<String, byte[]> entry : map.entrySet()) {
-                String className = entry.getKey();
-                byte[] classBytes = entry.getValue();
+            try (ClassFileLocator locator = ClassFileLocator.ForJarFile.of(file)) {
+                TypePool pool = TypePool.Default.of(locator);
 
-                try (ClassFileLocator locator = ClassFileLocator.Simple.of(className, classBytes)) {
-
-                    TypePool.Default.of(locator)
-                            .describe(className)
+                for (Map.Entry<String, byte[]> entry : map.entrySet()) {
+                    String className = entry.getKey();
+                    pool.describe(className)
                             .resolve()
                             .getDeclaredAnnotations()
                             .stream()
-                            .filter(annotations -> annotations.getAnnotationType().represents(Inject.class))
+                            .filter(a -> a.getAnnotationType().represents(Inject.class))
                             .findFirst()
-                            .ifPresent(annotation -> {
-                                Inject injectAnnotation = annotation.prepare(Inject.class).load();
-                                Inject.InjectType type = injectAnnotation.injectType();
-                                injectClasses.add(new InjectClassInfo(className, type));
+                            .ifPresent(a -> {
+                                Inject inject = a.prepare(Inject.class).load();
+                                injectClasses.add(new InjectClassInfo(className, inject.injectType()));
                             });
                 }
             }

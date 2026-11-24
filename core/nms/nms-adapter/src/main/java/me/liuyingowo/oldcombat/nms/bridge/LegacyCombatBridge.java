@@ -19,9 +19,7 @@ public class LegacyCombatBridge {
     static {
         try {
             legacyCombatBridgeClass = Class.forName(
-                    "me.liuyingowo.oldcombat.nms.bridge.LegacyCombatBridge",
-                    false,
-                    null
+                    "me.liuyingowo.oldcombat.nms.bridge.LegacyCombatBridge"
             );
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
