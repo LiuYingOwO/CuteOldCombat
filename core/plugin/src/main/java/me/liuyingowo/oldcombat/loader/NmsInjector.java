@@ -1,6 +1,7 @@
 package me.liuyingowo.oldcombat.loader;
 
 import me.liuyingowo.oldcombat.nms.Inject;
+import net.bytebuddy.description.annotation.AnnotationDescription;
 import net.bytebuddy.dynamic.ClassFileLocator;
 import net.bytebuddy.dynamic.loading.ClassInjector;
 import net.bytebuddy.pool.TypePool;
@@ -52,65 +53,69 @@ public final class NmsInjector {
 
     private static Map<String, byte[]> readInjectClasses(Logger logger) throws IOException {
 
-        record InjectClassInfo(String className, Inject.InjectType type) {}
+        record InjectClassInfo(String className, Inject.InjectType type, byte[] bytes) {}
         List<InjectClassInfo> injectClasses = new ArrayList<>();
-        Map<String, byte[]> map = new HashMap<>();
-        Map<String, byte[]> orderedMap = new LinkedHashMap<>();
 
+        Path path;
         try {
             URL url = NmsInjector.class.getProtectionDomain().getCodeSource().getLocation();
-            String packageName = Inject.class.getPackageName().replace('.', '/');
-            Path path = Path.of(url.toURI());
-            File file = path.toFile();
+            path = Path.of(url.toURI());
+        } catch (URISyntaxException e) {
+            throw new IOException(e);
+        }
+        File file = path.toFile();
 
-            try (var jar = new JarFile(file)) {
-                Enumeration<JarEntry> entries = jar.entries();
+        try (var jar = new JarFile(file);
+             var locator = new ClassFileLocator.ForJarFile(jar)) {
 
-                while (entries.hasMoreElements()) {
-                    JarEntry entry = entries.nextElement();
+            Enumeration<JarEntry> entries = jar.entries();
+            TypePool pool = TypePool.Default.of(locator);
 
-                    if (entry.isDirectory() || !entry.getName().endsWith(".class") || !entry.getName().startsWith(packageName + "/")) {
-                        continue;
-                    }
+            while (entries.hasMoreElements()) {
+                JarEntry entry = entries.nextElement();
 
-                    String className = entry.getName()
-                            .substring(0, entry.getName().length() - ".class".length())
-                            .replace('/', '.');
-
-                    try (InputStream in = jar.getInputStream(entry)) {
-                        map.put(className, in.readAllBytes());
-                    }
+                if (entry.isDirectory()
+                        || !entry.getName().endsWith(".class")
+                        || entry.getName().startsWith("META-INF/")
+                        || entry.getName().equals("module-info.class")) {
+                    continue;
                 }
-            }
-            try (ClassFileLocator locator = ClassFileLocator.ForJarFile.of(file)) {
-                TypePool pool = TypePool.Default.of(locator);
 
-                for (Map.Entry<String, byte[]> entry : map.entrySet()) {
-                    String className = entry.getKey();
-                    pool.describe(className)
-                            .resolve()
-                            .getDeclaredAnnotations()
-                            .stream()
-                            .filter(a -> a.getAnnotationType().represents(Inject.class))
-                            .findFirst()
-                            .ifPresent(a -> {
-                                Inject inject = a.prepare(Inject.class).load();
-                                injectClasses.add(new InjectClassInfo(className, inject.type()));
-                            });
+                String className = entry.getName()
+                        .substring(0, entry.getName().length() - ".class".length())
+                        .replace('/', '.');
+
+                Optional<AnnotationDescription> annotation = pool
+                        .describe(className)
+                        .resolve()
+                        .getDeclaredAnnotations()
+                        .stream()
+                        .filter(a -> a.getAnnotationType().represents(Inject.class))
+                        .findFirst();
+
+                if (annotation.isEmpty()) {
+                    continue;
                 }
+
+                Inject inject = annotation.get().prepare(Inject.class).load();
+                byte[] bytes;
+                try (InputStream in = jar.getInputStream(entry)) {
+                    bytes = in.readAllBytes();
+                }
+
+                injectClasses.add(new InjectClassInfo(className, inject.type(), bytes));
             }
+
             injectClasses.sort(Comparator.comparingInt(info -> info.type().ordinal()));
 
-            for (InjectClassInfo info : injectClasses) {
-                String className = info.className();
-                byte[] bytes = map.get(className);
+            Map<String, byte[]> map = new LinkedHashMap<>(injectClasses.size());
 
-                orderedMap.put(className, bytes);
-                logger.info("[Inject] [" + info.type().name() + "] Found Class: " + className);
+            for (InjectClassInfo info : injectClasses) {
+                map.put(info.className, info.bytes);
+                logger.info("[Inject] [" + info.type().name() + "] Found Class: " + info.className);
             }
-            return orderedMap;
-        } catch (URISyntaxException e3) {
-            throw new IOException(e3);
+
+            return map;
         }
     }
 }
