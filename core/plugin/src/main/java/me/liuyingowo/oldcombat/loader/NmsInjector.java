@@ -36,18 +36,41 @@ public final class NmsInjector {
 
         try {
             Map<String, byte[]> classes = readInjectClasses(logger);
+
             if (classes.isEmpty()) {
                 throw new RuntimeException("Inject Class is Empty.");
             }
-            ClassInjector.UsingUnsafe.Factory.resolve(instrumentation)
+
+            if (isAlreadyInjected(targetLoader, classes.keySet())) {
+                logger.info("All @Inject classes are already present in " + targetLoader + "; skipping.");
+                return;
+            }
+
+            Map<String, Class<?>> result = ClassInjector.UsingUnsafe.Factory
+                    .resolve(instrumentation)
                     .make(targetLoader)
                     .injectRaw(classes);
-            logger.info("All classes requiring injection have been injected into " + targetLoader);
+
+            logger.info("Injected/reused " + result.size() + " @Inject class(es) into " + targetLoader);
             injected = true;
 
         } catch (IOException e) {
             throw new RuntimeException("Failed to inject the NMS bridge classes into" + targetLoader + ".", e);
         }
+    }
+
+    private static boolean isAlreadyInjected(ClassLoader target, Set<String> classNames) {
+        for (String className : classNames) {
+            try {
+                Class<?> type = Class.forName(className, false, target);
+                if (type.getClassLoader() != target) {
+                    return false;
+                }
+            } catch (ClassNotFoundException e) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static Map<String, byte[]> readInjectClasses(Logger logger) throws IOException {
