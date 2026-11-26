@@ -19,13 +19,13 @@ public class BridgeSync {
         double minDirectionLength = config.getDouble("knockback.min-direction-length");
         boolean applyResistance = config.getBoolean("knockback.apply-resistance");
 
-        KnockbackBridge.setEnabled(enabled);
-        KnockbackBridge.setHorizontal(horizontal);
-        KnockbackBridge.setVertical(vertical);
-        KnockbackBridge.setVerticalLimit(verticalLimit);
-        KnockbackBridge.setFriction(friction);
-        KnockbackBridge.setMinDirectionLength(minDirectionLength);
-        KnockbackBridge.setApplyResistance(applyResistance);
+        KnockbackBridge.enabled = enabled;
+        KnockbackBridge.horizontal = horizontal;
+        KnockbackBridge.vertical = vertical;
+        KnockbackBridge.verticalLimit = verticalLimit;
+        KnockbackBridge.friction = friction;
+        KnockbackBridge.minDirectionLength = minDirectionLength;
+        KnockbackBridge.applyResistance = applyResistance;
 
 //        logger.info("Knockback updated: enabled=" + enabled
 //                + ", horizontal=" + horizontal
@@ -44,10 +44,10 @@ public class BridgeSync {
         boolean legacy_damage = config.getBoolean("legacy_combat.enable-legacy-damage");
         boolean critical_while_sprinting = config.getBoolean("legacy_combat.critical-while-sprinting");
 
-        LegacyCombatBridge.setEnabled(enabled);
-        LegacyCombatBridge.setDisableSweepAttack(disable_sweep_attack);
-        LegacyCombatBridge.setLegacyDamage(legacy_damage);
-        LegacyCombatBridge.setCriticalWhileSprinting(critical_while_sprinting);
+        LegacyCombatBridge.enabled = (enabled);
+        LegacyCombatBridge.disable_sweep_attack = (disable_sweep_attack);
+        LegacyCombatBridge.enable_legacy_damage = (legacy_damage);
+        LegacyCombatBridge.critical_while_sprinting = (critical_while_sprinting);
     }
 
     public static void syncSound(Plugin plugin) {
@@ -58,10 +58,10 @@ public class BridgeSync {
         boolean disable_knockback = config.getBoolean("sounds.disable-knockback");
         boolean disable_nodamage = config.getBoolean("sounds.disable-nodamage");
 
-        SoundBridge.setDisableSweep(disable_sweep);
-        SoundBridge.setDisableAttack(disable_attack);
-        SoundBridge.setDisableKnockback(disable_knockback);
-        SoundBridge.setDisableNodamage(disable_nodamage);
+        SoundBridge.disable_sweep = (disable_sweep);
+        SoundBridge.disable_attack = (disable_attack);
+        SoundBridge.disable_knockback = (disable_knockback);
+        SoundBridge.disable_nodamage = (disable_nodamage);
     }
 
 }

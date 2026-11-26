@@ -14,7 +14,6 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class NmsInjector {
@@ -47,7 +46,7 @@ public final class NmsInjector {
             injected = true;
 
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Failed to inject the NMS bridge classes into " + targetLoader + ".", e);
+            throw new RuntimeException("Failed to inject the NMS bridge classes into" + targetLoader + ".", e);
         }
     }
 
