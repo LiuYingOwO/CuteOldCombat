@@ -4,7 +4,7 @@ import me.liuyingowo.oldcombat.nms.Inject;
 
 import java.lang.reflect.Field;
 
-@Inject(injectType = Inject.InjectType.BRIDGE)
+@Inject(type = Inject.InjectType.BRIDGE)
 public class LegacyCombatBridge {
 
     public static volatile boolean enabled;

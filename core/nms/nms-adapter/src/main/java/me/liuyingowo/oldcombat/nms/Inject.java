@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Inject {
 
-    InjectType injectType() default InjectType.DEFAULT;
+    InjectType type() default InjectType.DEFAULT;
 
     enum InjectType {
         BRIDGE,

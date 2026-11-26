@@ -34,10 +34,10 @@ public class ModuleLoader {
         for (Module module : reverse) {
             try {
                 module.unloadModule();
-            } catch (RuntimeException exception) {
+            } catch (Throwable throwable) {
                 module.plugin.getLogger().log(Level.WARNING,
                         "Failed to unloadModule Module: " + module.getClass().getSimpleName(),
-                        exception
+                        throwable
                 );
             }
         }

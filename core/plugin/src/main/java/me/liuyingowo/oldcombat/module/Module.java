@@ -22,16 +22,26 @@ public abstract class Module implements Listener {
         if (enabled) {
             return;
         }
-        onLoad();
-        Bukkit.getPluginManager().registerEvents(this, plugin);
-        enabled = true;
-        plugin.getLogger().info("Loaded Module: " + this.getClass().getSimpleName());
+        try {
+            onLoad();
+            Bukkit.getPluginManager().registerEvents(this, plugin);
+            enabled = true;
+            plugin.getLogger().info("Loaded Module: " + this.getClass().getSimpleName());
+        } catch (Throwable throwable) {
+            try {
+                onUnload();
+            } catch (Throwable suppressed) {
+                throwable.addSuppressed(suppressed);
+            }
+            throw throwable;
+        }
     }
 
     public final void unloadModule() {
         if (!enabled) {
             return;
         }
+
         HandlerList.unregisterAll(this);
         enabled = false;
         onUnload();
@@ -39,13 +49,13 @@ public abstract class Module implements Listener {
     }
 
     public final void reloadModule() {
-        HandlerList.unregisterAll(this);
+        if (!enabled) {
+            loadModule();
+            return;
+        }
 
-        onUnload();
-        onLoad();
-
-        Bukkit.getPluginManager().registerEvents(this, plugin);
-        plugin.getLogger().info("Reloaded Module: " + this.getClass().getSimpleName());
+        unloadModule();
+        loadModule();
     }
 
     public final boolean isModuleEnabled() {

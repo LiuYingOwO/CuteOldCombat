@@ -26,12 +26,11 @@ public final class NmsInjector {
                                                    ClassLoader targetLoader,
                                                    Logger logger) {
 
-        if (instrumentation == null) {
-            throw new IllegalArgumentException("instrumentation could not be null");
-        }
+        Objects.requireNonNull(instrumentation, "instrumentation could not be null");
+        Objects.requireNonNull(targetLoader, "targetLoader could not be null");
+        Objects.requireNonNull(logger, "logger could not be null");
 
         if (injected) {
-            injected = true;
             return;
         }
 
@@ -44,6 +43,8 @@ public final class NmsInjector {
                     .make(targetLoader)
                     .injectRaw(classes);
             logger.info("All classes requiring injection have been injected into " + targetLoader);
+            injected = true;
+
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Failed to inject the NMS bridge classes into " + targetLoader + ".", e);
         }
@@ -94,7 +95,7 @@ public final class NmsInjector {
                             .findFirst()
                             .ifPresent(a -> {
                                 Inject inject = a.prepare(Inject.class).load();
-                                injectClasses.add(new InjectClassInfo(className, inject.injectType()));
+                                injectClasses.add(new InjectClassInfo(className, inject.type()));
                             });
                 }
             }

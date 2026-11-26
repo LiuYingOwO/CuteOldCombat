@@ -12,7 +12,7 @@ import java.lang.reflect.Field;
  * dependency-free: JDK types only (primitives, {@code java.lang.*},
  * {@code java.lang.reflect.*}) — no Bukkit/Paper/plugin types.</p>
  */
-@Inject(injectType = Inject.InjectType.BRIDGE)
+@Inject(type = Inject.InjectType.BRIDGE)
 public final class KnockbackBridge {
 
     public static volatile boolean enabled;
